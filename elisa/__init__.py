@@ -128,7 +128,6 @@ else:
     TELETHON_ID = Config.TELETHON_ID
     SPAMWATCH = Config.SPAMWATCH_API
 
-SUDO_USERS.add(OWNER_ID)
 
 # Telethon
 api_id = TELETHON_ID
