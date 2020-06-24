@@ -70,8 +70,6 @@ if ENV:
     CUSTOM_CMD = os.environ.get('CUSTOM_CMD', False)
     API_WEATHER = os.environ.get('API_OPENWEATHER', None)
     WALL_API = os.environ.get('WALL_API', None)
-    TELETHON_ID = int(os.environ.get('TL_APP_ID', None))
-    TELETHON_HASH = os.environ.get('TL_HASH', None)
     SPAMWATCH = os.environ.get('SPAMWATCH_API', None)
 
 else:
@@ -138,10 +136,6 @@ if SPAMWATCH == None:
 else:
    spamwtc = spamwatch.Client(SPAMWATCH)
 
-# Telethon
-api_id = TELETHON_ID
-api_hash = TELETHON_HASH
-client = TelegramClient('skylee', api_id, api_hash)
 
 updater = tg.Updater(TOKEN, workers=WORKERS, use_context=True)
 
