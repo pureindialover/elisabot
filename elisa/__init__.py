@@ -144,7 +144,7 @@ WHITELIST_USERS = list(WHITELIST_USERS)
 SUPPORT_USERS = list(SUPPORT_USERS)
 
 # Load at end to ensure all prev variables have been set
-from skylee.modules.helper_funcs.handlers import CustomCommandHandler
+from elisa.modules.helper_funcs.handlers import CustomCommandHandler
 
 if CUSTOM_CMD and len(CUSTOM_CMD) >= 1:
     tg.CommandHandler = CustomCommandHandler
