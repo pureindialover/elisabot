@@ -119,8 +119,7 @@ else:
     WALL_API = Config.WALL_API
     SPAMWATCH = Config.SPAMWATCH_API
 
-
-    updater = tg.Updater(TOKEN, workers=WORKERS)
+updater = tg.Updater(TOKEN, workers=WORKERS)
 
 dispatcher = updater.dispatcher
 
