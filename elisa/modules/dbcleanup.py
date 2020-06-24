@@ -6,7 +6,7 @@ from telegram.ext import CommandHandler, CallbackQueryHandler, run_async, Filter
 
 import elisa.modules.sql.global_bans_sql as gban_sql
 import elisa.modules.sql.users_sql as user_sql
-from elisa import dispatcher, OWNER_ID
+from elisa import dispatcher, SUDO_USERS
 
 
 def get_invalid_chats(bot: Bot, update: Update, remove: bool = False):
