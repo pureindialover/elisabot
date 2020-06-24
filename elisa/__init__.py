@@ -119,17 +119,7 @@ else:
     WALL_API = Config.WALL_API
     SPAMWATCH = Config.SPAMWATCH_API
 
-# Pass if SpamWatch token not set.
-if SPAMWATCH == None:
-   spamwtc = None
-   LOGGER.warning("Invalid spamwatch api")
-else:
-   spamwtc = spamwatch.Client(SPAMWATCH)
 
-# Telethon
-api_id = TELETHON_ID
-api_hash = TELETHON_HASH
-client = TelegramClient('elisa', api_id, api_hash)
 
 updater = tg.Updater(TOKEN, workers=WORKERS, use_context=True)
 
