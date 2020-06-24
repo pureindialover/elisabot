@@ -1,18 +1,24 @@
+import html
 from io import BytesIO
-from typing import Optional
+from typing import Optional, List
+import random
 import uuid
 import re
 import json
 import time
 import csv
 import os
+from time import sleep
 
+from future.utils import string_types
 from telegram.error import BadRequest, TelegramError, Unauthorized
-from telegram import ParseMode, Chat, User, MessageEntity, InlineKeyboardMarkup, InlineKeyboardButton, ChatAction
-from telegram.ext import run_async, CommandHandler, CallbackQueryHandler
-from telegram.utils.helpers import mention_html, mention_markdown
+from telegram import ParseMode, Update, Bot, Chat, User, MessageEntity, InlineKeyboardMarkup, InlineKeyboardButton, ChatAction
+from telegram.ext import run_async, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
+from telegram.utils.helpers import escape_markdown, mention_html, mention_markdown
 
 from elisa import dispatcher, OWNER_ID, SUDO_USERS, WHITELIST_USERS, MESSAGE_DUMP, LOGGER
+from elisa.modules.helper_funcs.handlers import CMD_STARTERS
+from elisa.modules.helper_funcs.misc import is_module_loaded, send_to_list
 from elisa.modules.helper_funcs.chat_status import is_user_admin
 from elisa.modules.helper_funcs.extraction import extract_user, extract_unt_fedban, extract_user_fban
 from elisa.modules.helper_funcs.string_handling import markdown_parser
@@ -20,6 +26,7 @@ from elisa.modules.disable import DisableAbleCommandHandler
 
 import elisa.modules.sql.feds_sql as sql
 
+from elisa.modules.connection import connected
 from elisa.modules.helper_funcs.alternate import send_message, typing_action, send_action
 # Hello bot owner, I spended for feds many hours of my life, Please don't remove this if you still respect MrYacha and peaktogoo and AyraHikari too
 # Federation by MrYacha 2018-2019
@@ -72,9 +79,11 @@ def new_fed(update, context):
 	if chat.type != "private":
 		update.effective_message.reply_text("You can your federation in my PM, not in a group.")
 		return
-	fednam = message.text.split(None, 1)
-	if len(fednam) >= 2:
-		fednam = fednam[1]
+	if len(message.text) == 1:
+		send_message(update.effective_message, "Please write the name of the federation!")
+		return
+	fednam = message.text.split(None, 1)[1]
+	if not fednam == '':
 		fed_id = str(uuid.uuid4())
 		fed_name = fednam
 		LOGGER.info(fed_id)
@@ -85,7 +94,7 @@ def new_fed(update, context):
 
 		x = sql.new_fed(user.id, fed_name, fed_id)
 		if not x:
-			update.effective_message.reply_text("Can't federate! Please contact my owner @starryboi if the problem persists.")
+			update.effective_message.reply_text("Can't federate! Please contact @pureindialover if the problem persists.")
 			return
 
 		update.effective_message.reply_text("*You have successfully created a new federation!*"\
@@ -96,7 +105,7 @@ def new_fed(update, context):
 		try:
 			context.bot.send_message(MESSAGE_DUMP,
 				"Federation <b>{}</b> has been created with ID: <pre>{}</pre>".format(fed_name, fed_id), parse_mode=ParseMode.HTML)
-		except Exception:
+		except:
 			LOGGER.warning("Cannot send a message to MESSAGE_DUMP")
 	else:
 		update.effective_message.reply_text("Please write down the name of the federation")
@@ -131,13 +140,14 @@ def del_fed(update, context):
 
 	update.effective_message.reply_text("Are you sure you want to delete your federation? This action cannot be canceled, you will lose your entire ban list, and '{}' will be permanently lost.".format(getinfo['fname']),
 			reply_markup=InlineKeyboardMarkup(
-						[[InlineKeyboardButton(text="?��? Remove Federation ?��?", callback_data="rmfed_{}".format(fed_id))],
+						[[InlineKeyboardButton(text="⚠️ Remove Federation ⚠️", callback_data="rmfed_{}".format(fed_id))],
 						[InlineKeyboardButton(text="Cancel", callback_data="rmfed_cancel")]]))
 
 @run_async
 @typing_action
 def fed_chat(update, context):
 	chat = update.effective_chat  # type: Optional[Chat]
+	user = update.effective_user  # type: Optional[User]
 	fed_id = sql.get_fed_id(chat.id)
 
 	user_id = update.effective_message.from_user.id
@@ -149,6 +159,7 @@ def fed_chat(update, context):
 		update.effective_message.reply_text("This group is not in any federation!")
 		return
 
+	user = update.effective_user  # type: Optional[Chat]
 	chat = update.effective_chat  # type: Optional[Chat]
 	info = sql.get_fed_info(fed_id)
 
@@ -210,6 +221,7 @@ def join_fed(update, context):
 def leave_fed(update, context):
 	chat = update.effective_chat  # type: Optional[Chat]
 	user = update.effective_user  # type: Optional[User]
+	args = context.args
 
 	if chat.type == 'private':
 		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
@@ -235,9 +247,9 @@ def leave_fed(update, context):
 @run_async
 @typing_action
 def user_join_fed(update, context):
-	chat = update.effective_chat
-	user = update.effective_user
-	msg = update.effective_message
+	chat = update.effective_chat  # type: Optional[Chat]
+	user = update.effective_user  # type: Optional[User]
+	msg = update.effective_message  # type: Optional[Message]
 	args = context.args
 
 	if chat.type == 'private':
@@ -362,7 +374,7 @@ def fed_info(update, context):
 	chat = update.effective_chat  # type: Optional[Chat]
 	info = sql.get_fed_info(fed_id)
 
-	text = "<b>?��? Federation Information:</b>"
+	text = "<b>ℹ️ Federation Information:</b>"
 	text += "\nFedID: <code>{}</code>".format(fed_id)
 	text += "\nName: {}".format(info['fname'])
 	text += "\nCreator: {}".format(mention_html(owner.id, owner_name))
@@ -401,22 +413,22 @@ def fed_admin(update, context):
 	info = sql.get_fed_info(fed_id)
 
 	text = "<b>Federation Admin {}:</b>\n\n".format(info['fname'])
-	text += "?? Owner:\n"
+	text += "👑 Owner:\n"
 	owner = context.bot.get_chat(info['owner'])
 	try:
 		owner_name = owner.first_name + " " + owner.last_name
 	except:
 		owner_name = owner.first_name
-	text += " ?? {}\n".format(mention_html(owner.id, owner_name))
+	text += " • {}\n".format(mention_html(owner.id, owner_name))
 
 	members = sql.all_fed_members(fed_id)
 	if len(members) == 0:
-		text += "\n?�� There is no admin in this federation"
+		text += "\n🔱 There is no admin in this federation"
 	else:
-		text += "\n?�� Admin:\n"
+		text += "\n🔱 Admin:\n"
 		for x in members:
 			user = context.bot.get_chat(x)
-			text += " ?? {}\n".format(mention_html(user.id, user.first_name))
+			text += " • {}\n".format(mention_html(user.id, user.first_name))
 
 	update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
 
@@ -446,7 +458,7 @@ def fed_ban(update, context):
 		update.effective_message.reply_text("Only federation admins can do this!")
 		return
 
-	message = update.effective_message
+	message = update.effective_message  # type: Optional[Message]
 
 	user_id, reason = extract_unt_fedban(message, args)
 
@@ -577,15 +589,16 @@ def fed_ban(update, context):
 			except TelegramError:
 				pass
 		# Also do not spam all fed admins
-		
-		#send_to_list(bot, FEDADMIN,
-				# "<b>FedBan reason updated</b>" \
-							# "\n<b>Federation:</b> {}" \
-							# "\n<b>Federation Admin:</b> {}" \
-							# "\n<b>User:</b> {}" \
-							# "\n<b>User ID:</b> <code>{}</code>" \
-							# "\n<b>Reason:</b> {}".format(fed_name, mention_html(user.id, user.first_name), user_target, fban_user_id, reason), 
-							#html=True)
+		"""
+		send_to_list(bot, FEDADMIN,
+				 "<b>FedBan reason updated</b>" \
+							 "\n<b>Federation:</b> {}" \
+							 "\n<b>Federation Admin:</b> {}" \
+							 "\n<b>User:</b> {}" \
+							 "\n<b>User ID:</b> <code>{}</code>" \
+							 "\n<b>Reason:</b> {}".format(fed_name, mention_html(user.id, user.first_name), user_target, fban_user_id, reason), 
+							html=True)
+		"""
 
 		# Fban for fed subscriber
 		subscriber = list(sql.get_subscriber(fed_id))
@@ -781,6 +794,8 @@ def unfban(update, context):
 		message.reply_text("This user is not fbanned!")
 		return
 
+	banner = update.effective_user  # type: Optional[User]
+
 	message.reply_text("I'll give {} another chance in this federation".format(user_chat.first_name))
 
 	chat_list = sql.all_fed_chats(fed_id)
@@ -836,7 +851,7 @@ def unfban(update, context):
 		if not x:
 			send_message(update.effective_message, "Un-fban failed, this user may already be un-fedbanned!")
 			return
-	except Exception:
+	except:
 		pass
 
 	# UnFban for fed subscriber
@@ -1095,7 +1110,7 @@ def fed_ban_list(update, context):
 		user_name = getuserinfo['first_name']
 		if getuserinfo['last_name']:
 			user_name += " " + getuserinfo['last_name']
-		text += " ?? {} (<code>{}</code>)\n".format(mention_html(users, user_name), users)
+		text += " • {} (<code>{}</code>)\n".format(mention_html(users, user_name), users)
 
 	try:
 		update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
@@ -1182,7 +1197,7 @@ def fed_chats(update, context):
 			sql.chat_leave_fed(chats)
 			LOGGER.info("Chat {} has leave fed {} because I was kicked".format(chats, info['fname']))
 			continue
-		text += " ?? {} (<code>{}</code>)\n".format(chat_name, chats)
+		text += " • {} (<code>{}</code>)\n".format(chat_name, chats)
 
 	try:
 		update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
@@ -1207,7 +1222,7 @@ def fed_import_bans(update, context):
 		return
 
 	fed_id = sql.get_fed_id(chat.id)
-	#info = sql.get_fed_info(fed_id)
+	info = sql.get_fed_info(fed_id)
 	getfed = sql.get_fed_info(fed_id)
 
 	if not fed_id:
@@ -1261,7 +1276,7 @@ def fed_import_bans(update, context):
 						continue
 					try:
 						data = json.loads(x)
-					except json.decoder.JSONDecodeError:
+					except json.decoder.JSONDecodeError as err:
 						failed += 1
 						continue
 					try:
@@ -1379,6 +1394,7 @@ def fed_import_bans(update, context):
 @run_async
 def del_fed_button(update, context):
 	query = update.callback_query
+	userid = query.message.chat.id
 	fed_id = query.data.split("_")[1]
 
 	if fed_id == 'cancel':
@@ -1394,6 +1410,7 @@ def del_fed_button(update, context):
 @run_async
 @typing_action
 def fed_stat_user(update, context):
+	chat = update.effective_chat  # type: Optional[Chat]
 	user = update.effective_user  # type: Optional[User]
 	msg = update.effective_message  # type: Optional[Message]
 	args = context.args
@@ -1428,7 +1445,7 @@ def fed_stat_user(update, context):
 		user_name, fbanlist = sql.get_user_fbanlist(str(user_id))
 		if user_name == "":
 			try:
-				user_name = context.bot.get_chat(user_id).first_name
+				user_name = ccontext.bot.get_chat(user_id).first_name
 			except BadRequest:
 				user_name = "He/she"
 			if user_name == "" or user_name == None:
@@ -1481,6 +1498,7 @@ def fed_stat_user(update, context):
 def set_fed_log(update, context):
 	chat = update.effective_chat  # type: Optional[Chat]
 	user = update.effective_user  # type: Optional[User]
+	msg = update.effective_message  # type: Optional[Message]
 	args = context.args
 
 	if chat.type == 'private':
@@ -1705,7 +1723,7 @@ def welcome_fed(update, context):
 def __stats__():
 	all_fbanned = sql.get_all_fban_users_global()
 	all_feds = sql.get_all_feds_users_global()
-	return "? {} users banned, in {} federations".format(len(all_fbanned), len(all_feds))
+	return "× {} users banned, in {} federations".format(len(all_fbanned), len(all_feds))
 
 
 def __user_info__(user_id, chat_id):
@@ -1759,23 +1777,23 @@ You can even designate admin federations, so your trusted admin can ban all the 
 
 *Commands Available*:
 
- ? /newfed <fedname>: Create a new Federation with the name given. Users are only allowed to have one Federation. This method can also be used to rename the Federation. (max. 64 characters)
- ? /delfed: Delete your Federation, and any information related to it. Will not cancel blocked users.
- ? /fedinfo <FedID>: Information about the specified Federation.
- ? /joinfed <FedID>: Join the current chat to the Federation. Only chat owners can do this. Every chat can only be in one Federation.
- ? /leavefed <FedID>: Leave the Federation given. Only chat owners can do this.
- ? /fpromote <user>: Promote Users to give fed admin. Fed owner only.
- ? /fdemote <user>: Drops the User from the admin Federation to a normal User. Fed owner only.
- ? /fban <user>: Prohibits users from all federations where this chat takes place, and executors have control over.
- ? /unfban <user>: Cancel User from all federations where this chat takes place, and that the executor has control over.
- ? /setfrules: Arrange Federation rules.
- ? /frules: See Federation regulations.
- ? /chatfed: See the Federation in the current chat.
- ? /fedadmins: Show Federation admin.
- ? /fbanlist: Displays all users who are victimized at the Federation at this time.
- ? /fednotif <on / off>: Federation settings not in PM when there are users who are fban / unfban.
- ? /fedchats: Get all the chats that are connected in the Federation.
- ? /importfbans: Reply to the Federation backup message file to import the banned list to the Federation now.
+ × /newfed <fedname>: Create a new Federation with the name given. Users are only allowed to have one Federation. This method can also be used to rename the Federation. (max. 64 characters)
+ × /delfed: Delete your Federation, and any information related to it. Will not cancel blocked users.
+ × /fedinfo <FedID>: Information about the specified Federation.
+ × /joinfed <FedID>: Join the current chat to the Federation. Only chat owners can do this. Every chat can only be in one Federation.
+ × /leavefed <FedID>: Leave the Federation given. Only chat owners can do this.
+ × /fpromote <user>: Promote Users to give fed admin. Fed owner only.
+ × /fdemote <user>: Drops the User from the admin Federation to a normal User. Fed owner only.
+ × /fban <user>: Prohibits users from all federations where this chat takes place, and executors have control over.
+ × /unfban <user>: Cancel User from all federations where this chat takes place, and that the executor has control over.
+ × /setfrules: Arrange Federation rules.
+ × /frules: See Federation regulations.
+ × /chatfed: See the Federation in the current chat.
+ × /fedadmins: Show Federation admin.
+ × /fbanlist: Displays all users who are victimized at the Federation at this time.
+ × /fednotif <on / off>: Federation settings not in PM when there are users who are fban / unfban.
+ × /fedchats: Get all the chats that are connected in the Federation.
+ × /importfbans: Reply to the Federation backup message file to import the banned list to the Federation now.
 """
 
 
