@@ -213,10 +213,6 @@ def invite(update, context):
                         msg.reply_text("This command is meant to use in chat not in PM")
                         return ""
                 chat = update.effective_chat
-
-        if user_can_invite_users(chat, user, context.bot.id) is False:
-    	message.reply_text("You don't have enough rights to get invite link!")
-    	return ""
         
         if chat.username:
                 msg.reply_text(chat.username)
