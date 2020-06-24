@@ -22,12 +22,7 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 6:
 ENV = bool(os.environ.get('ENV', False))
 
 if ENV:
-    TOKEN = os.environ.get('TOKEN', None)
-    try:
-        OWNER_ID = int(os.environ.get('OWNER_ID', None))
-    except ValueError:
-        raise Exception("Your OWNER_ID env variable is not a valid integer.")
-
+    API_KEY = os.environ.get('TOKEN', None)
     MESSAGE_DUMP = os.environ.get('MESSAGE_DUMP', None)
     OWNER_USERNAME = os.environ.get("OWNER_USERNAME", None)
 
