@@ -1,0 +1,17 @@
+elisa/config.py
+logfile
+skylee.session
+skylee.session-journal
+*.pyc
+.idea/
+.project
+.pydevproject
+.directory
+.vscode
+okgoogle.png
+*.backup
+sticker.png
+kangsticker.png
+kangsticker
+skylee.mp3
+gpic.png
