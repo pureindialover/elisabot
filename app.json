@@ -39,3 +39,13 @@
       "description": "Whether to allow using exclamation marks ! for commands as well as /.",
       "value": "True"
     }
+   },
+  "addons": [
+    {
+      "plan": "heroku-postgresql Standard 0 - $50.00/mo",
+      "options": {
+        "version": "9.5"
+      }
+    }
+  ]
+}
