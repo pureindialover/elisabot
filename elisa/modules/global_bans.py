@@ -7,7 +7,7 @@ from telegram.ext import run_async, CommandHandler, MessageHandler, Filters
 from telegram.utils.helpers import mention_html
 
 import elisa.modules.sql.global_bans_sql as sql
-from elisa import dispatcher, OWNER_ID, SUDO_USERS, SUPPORT_USERS, STRICT_GBAN, MESSAGE_DUMP, spamwtc
+from elisa import dispatcher, OWNER_ID, SUDO_USERS, SUPPORT_USERS, STRICT_GBAN, MESSAGE_DUMP
 from elisa.modules.helper_funcs.chat_status import user_admin, is_user_admin
 from elisa.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from elisa.modules.helper_funcs.filters import CustomFilters

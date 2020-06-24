@@ -19,7 +19,7 @@ from telegram.ext import CommandHandler, run_async, Filters
 from telegram.utils.helpers import escape_markdown, mention_html
 from telegram.error import BadRequest
 
-from elisa import dispatcher, OWNER_ID, SUDO_USERS, SUPPORT_USERS, WHITELIST_USERS, WALL_API, spamwtc
+from elisa import dispatcher, OWNER_ID, SUDO_USERS, SUPPORT_USERS, WHITELIST_USERS, WALL_API
 from elisa.__main__ import STATS, USER_INFO, GDPR
 from elisa.modules.disable import DisableAbleCommandHandler
 from elisa.modules.helper_funcs.extraction import extract_user

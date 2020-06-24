@@ -9,7 +9,7 @@ from telegram.utils.helpers import mention_html
 
 import elisa.modules.sql.welcome_sql as sql
 from elisa.modules.sql.global_bans_sql import is_user_gbanned
-from elisa import dispatcher, OWNER_ID, LOGGER, MESSAGE_DUMP, spamwtc
+from elisa import dispatcher, OWNER_ID, LOGGER, MESSAGE_DUMP
 from elisa.modules.helper_funcs.chat_status import user_admin, is_user_ban_protected
 from elisa.modules.helper_funcs.misc import build_keyboard, revert_buttons
 from elisa.modules.helper_funcs.msg_types import get_welcome_type
