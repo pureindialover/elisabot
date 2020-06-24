@@ -73,7 +73,7 @@ if ENV:
     SPAMWATCH = os.environ.get('SPAMWATCH_API', None)
 
 else:
-    from skylee.config import Development as Config
+    from elisa.config import Development as Config
     TOKEN = Config.API_KEY
     try:
         OWNER_ID = int(Config.OWNER_ID)
