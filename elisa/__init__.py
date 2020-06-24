@@ -22,7 +22,7 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 6:
 ENV = bool(os.environ.get('ENV', False))
 
 if ENV:
-    API_KEY = os.environ.get('TOKEN', None)
+    TOKEN = os.environ.get('TOKEN', None)
     MESSAGE_DUMP = os.environ.get('MESSAGE_DUMP', None)
     OWNER_USERNAME = os.environ.get("OWNER_USERNAME", None)
 
@@ -65,12 +65,9 @@ if ENV:
     CUSTOM_CMD = os.environ.get('CUSTOM_CMD', False)
     API_WEATHER = os.environ.get('API_OPENWEATHER', None)
     WALL_API = os.environ.get('WALL_API', None)
-    TELETHON_ID = int(os.environ.get('TL_APP_ID', None))
-    TELETHON_HASH = os.environ.get('TL_HASH', None)
-    SPAMWATCH = os.environ.get('SPAMWATCH_API', None)
 
 else:
-    from skylee.config import Development as Config
+    from elisa.config import Development as Config
     TOKEN = Config.API_KEY
     try:
         OWNER_ID = int(Config.OWNER_ID)
