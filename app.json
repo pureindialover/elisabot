@@ -44,7 +44,7 @@
     {
       "plan": "heroku-postgresql:standard-0",
       "options": {
-        "version": "9.5"
+        "version": "9.6"
       }
     }
   ]
