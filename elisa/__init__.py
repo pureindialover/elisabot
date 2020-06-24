@@ -1,7 +1,6 @@
 import logging
 import os
 import sys
-import spamwatch
 from telethon import TelegramClient
 import telegram.ext as tg
 
@@ -12,7 +11,7 @@ logging.basicConfig(
 
 LOGGER = logging.getLogger(__name__)
 
-LOGGER.info("Starting Skylee...")
+LOGGER.info("Starting Elisa...")
 
 # if version < 3.6, stop bot.
 if sys.version_info[0] < 3 or sys.version_info[1] < 6:
@@ -70,10 +69,12 @@ if ENV:
     CUSTOM_CMD = os.environ.get('CUSTOM_CMD', False)
     API_WEATHER = os.environ.get('API_OPENWEATHER', None)
     WALL_API = os.environ.get('WALL_API', None)
+    TELETHON_ID = int(os.environ.get('TL_APP_ID', None))
+    TELETHON_HASH = os.environ.get('TL_HASH', None)
     SPAMWATCH = os.environ.get('SPAMWATCH_API', None)
 
 else:
-    from elisa.config import Development as Config
+    from skylee.config import Development as Config
     TOKEN = Config.API_KEY
     try:
         OWNER_ID = int(Config.OWNER_ID)
@@ -129,13 +130,10 @@ else:
 
 SUDO_USERS.add(OWNER_ID)
 
-# Pass if SpamWatch token not set.
-if SPAMWATCH == None:
-   spamwtc = None
-   LOGGER.warning("Invalid spamwatch api")
-else:
-   spamwtc = spamwatch.Client(SPAMWATCH)
-
+# Telethon
+api_id = TELETHON_ID
+api_hash = TELETHON_HASH
+client = TelegramClient('elisa', api_id, api_hash)
 
 updater = tg.Updater(TOKEN, workers=WORKERS, use_context=True)
 
@@ -146,7 +144,7 @@ WHITELIST_USERS = list(WHITELIST_USERS)
 SUPPORT_USERS = list(SUPPORT_USERS)
 
 # Load at end to ensure all prev variables have been set
-from elisa.modules.helper_funcs.handlers import CustomCommandHandler
+from skylee.modules.helper_funcs.handlers import CustomCommandHandler
 
 if CUSTOM_CMD and len(CUSTOM_CMD) >= 1:
     tg.CommandHandler = CustomCommandHandler
