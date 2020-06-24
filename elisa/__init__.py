@@ -70,8 +70,6 @@ if ENV:
     CUSTOM_CMD = os.environ.get('CUSTOM_CMD', False)
     API_WEATHER = os.environ.get('API_OPENWEATHER', None)
     WALL_API = os.environ.get('WALL_API', None)
-    TELETHON_ID = (os.environ.get('TELETHON_ID', '32423')
-    TELETHON_HASH = os.environ.get('TELETHON_HASH', '324234')
     SPAMWATCH = os.environ.get('SPAMWATCH_API', None)
 
 else:
@@ -125,8 +123,6 @@ else:
     CUSTOM_CMD = Config.CUSTOM_CMD
     API_WEATHER = Config.API_OPENWEATHER
     WALL_API = Config.WALL_API
-    TELETHON_HASH = Config.TELETHON_HASH
-    TELETHON_ID = Config.TELETHON_ID
     SPAMWATCH = Config.SPAMWATCH_API
 
 SUDO_USERS.add(OWNER_ID)
