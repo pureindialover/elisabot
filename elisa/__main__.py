@@ -26,7 +26,9 @@ Hey there! my name is *{dispatcher.bot.first_name}*. If you have any questions o
 I'm here to make your group management fun and easy!
 i have lots of handy features, such as flood control, a warning system, a note keeping system, and even replies on predetermined filters.
 
-Any issues or need help related to me? join our group [skylee support chat](https://t.me/skyleebot).
+Any issues or need help related to me? join our group [Elisa support chat](https://t.me/skyleebot).
+
+Made with love by [them](https://t.me/TeamElisa)
 
 Wanna Add me to your Group? Just click the button below!
 """
