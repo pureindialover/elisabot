@@ -23,6 +23,11 @@ ENV = bool(os.environ.get('ENV', False))
 
 if ENV:
     TOKEN = os.environ.get('TOKEN', None)
+    try:
+        OWNER_ID = int(os.environ.get('OWNER_ID', None))
+    except ValueError:
+        raise Exception("Your OWNER_ID env variable is not a valid integer.")
+
     MESSAGE_DUMP = os.environ.get('MESSAGE_DUMP', None)
     OWNER_USERNAME = os.environ.get("OWNER_USERNAME", None)
 
@@ -65,9 +70,12 @@ if ENV:
     CUSTOM_CMD = os.environ.get('CUSTOM_CMD', False)
     API_WEATHER = os.environ.get('API_OPENWEATHER', None)
     WALL_API = os.environ.get('WALL_API', None)
+    TELETHON_ID = int(os.environ.get('TL_APP_ID', None))
+    TELETHON_HASH = os.environ.get('TL_HASH', None)
+    SPAMWATCH = os.environ.get('SPAMWATCH_API', None)
 
 else:
-    from elisa.config import Development as Config
+    from skylee.config import Development as Config
     TOKEN = Config.API_KEY
     try:
         OWNER_ID = int(Config.OWNER_ID)
@@ -117,9 +125,25 @@ else:
     CUSTOM_CMD = Config.CUSTOM_CMD
     API_WEATHER = Config.API_OPENWEATHER
     WALL_API = Config.WALL_API
+    TELETHON_HASH = Config.TELETHON_HASH
+    TELETHON_ID = Config.TELETHON_ID
     SPAMWATCH = Config.SPAMWATCH_API
 
-updater = tg.Updater(TOKEN, workers=WORKERS)
+SUDO_USERS.add(OWNER_ID)
+
+# Pass if SpamWatch token not set.
+if SPAMWATCH == None:
+   spamwtc = None
+   LOGGER.warning("Invalid spamwatch api")
+else:
+   spamwtc = spamwatch.Client(SPAMWATCH)
+
+# Telethon
+api_id = TELETHON_ID
+api_hash = TELETHON_HASH
+client = TelegramClient('skylee', api_id, api_hash)
+
+updater = tg.Updater(TOKEN, workers=WORKERS, use_context=True)
 
 dispatcher = updater.dispatcher
 
@@ -132,4 +156,3 @@ from elisa.modules.helper_funcs.handlers import CustomCommandHandler
 
 if CUSTOM_CMD and len(CUSTOM_CMD) >= 1:
     tg.CommandHandler = CustomCommandHandler
-
