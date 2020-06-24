@@ -42,7 +42,7 @@
    },
   "addons": [
     {
-      "plan": "heroku-postgresql Standard 0 - $50.00/mo",
+      "plan": "heroku-postgresql:standard-0",
       "options": {
         "version": "9.5"
       }
