@@ -120,6 +120,7 @@ else:
     SPAMWATCH = Config.SPAMWATCH_API
 
 
+    updater = tg.Updater(TOKEN, workers=WORKERS)
 
 dispatcher = updater.dispatcher
 
