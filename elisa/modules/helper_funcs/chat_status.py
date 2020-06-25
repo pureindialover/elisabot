@@ -70,7 +70,6 @@ def can_pin(func):
     return pin_rights
 
 
-#can invite perm added by @pureindialover
 def can_invite(func):
     @wraps(func)
     def invite_rights(update, context, *args, **kwargs):
