@@ -11,7 +11,7 @@ from telegram.utils.helpers import mention_html
 
 from elisa import dispatcher #BAN_STICKER
 from elisa.modules.disable import DisableAbleCommandHandler
-from elisa.modules.helper_funcs.chat_status import is_user_admin, bot_admin, user_admin_no_reply, user_admin, \
+from elisa.modules.helper_funcs.chat_status import is_user_admin, bot_admin, user_admin_no_reply, user_admin, can_changeinfo, \
     can_restrict
 from elisa.modules.helper_funcs.extraction import extract_text, extract_user_and_text, extract_user
 from elisa.modules.helper_funcs.filters import CustomFilters
@@ -150,6 +150,7 @@ def warn_user(update, context):
 @run_async
 @user_admin
 @bot_admin
+@can_restrict
 @loggable
 @typing_action
 def reset_warns(update, context):
@@ -177,6 +178,7 @@ def reset_warns(update, context):
 @run_async
 @user_admin
 @bot_admin
+@can_restrict
 @loggable
 @typing_action
 def remove_warns(update, context):
@@ -233,6 +235,7 @@ def warns(update, context):
 
 
 # Dispatcher handler stop - do not async
+@can_changeinfo
 @user_admin
 def add_warn_filter(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
@@ -263,7 +266,7 @@ def add_warn_filter(update, context):
     update.effective_message.reply_text("Warn filter added for '{}'!".format(keyword))
     raise DispatcherHandlerStop
 
-
+@can_changeinfo
 @user_admin
 def remove_warn_filter(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
@@ -319,6 +322,7 @@ def list_warn_filters(update, context):
 
 
 @run_async
+@can_changeinfo
 @loggable
 def reply_filter(update, context) -> str:
     chat = update.effective_chat  # type: Optional[Chat]
@@ -337,7 +341,7 @@ def reply_filter(update, context) -> str:
             return warn(user, chat, warn_filter.reply, message)
     return ""
 
-
+@can_changeinfo
 @run_async
 @user_admin
 @loggable
@@ -367,7 +371,7 @@ def set_warn_limit(update, context) -> str:
         msg.reply_text("The current warn limit is {}".format(limit))
     return ""
 
-
+@can_changeinfo
 @run_async
 @user_admin
 @typing_action
