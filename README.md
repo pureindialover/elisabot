@@ -1,13 +1,5 @@
-# SKYLEEBOT
+# ELISABOT
 
-[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
-[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/Naereen/)
-
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/843cdeb7f4124dd39eb3930939478259)](https://app.codacy.com/manual/starry69/skyleebot?utm_source=github.com&utm_medium=referral&utm_content=starry69/skyleebot&utm_campaign=Badge_Grade_Dashboard)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-
-![logo](https://telegra.ph/file/0dd4a92bb893c1aaa6cee.jpg)
 
 [![Deploy To Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/pureindialover/elisabot)
 
@@ -16,36 +8,11 @@ A modular telegram Python bot running on python3 with an sqlalchemy database.
 Originally a simple group management bot with multiple admin features, it has evolved, becoming extremely modular and 
 simple to use. Note that this project uses well-known Telegram-bot of it's time @BanhammerMarie_bot from Paul Larson as it's base.
 
-Can be found on telegram as [Skylee](https://t.me/skylee_bot).
-
-Join the [news channel](https://t.me/skyleeupdates) if you just want to stay in the loop about new features or
-announcements.
-
-Alternatively, [contact my reporter bot on telegram](https://t.me/YumiUzo_bot)! (Keep all support questions in the support chat, where more people can help you.)
-
-## Credits
-
-Skittbot for Stickers module and memes in extras module.
-
-1maverick1 for many stuffs.
-
-AyraHikari for weather modules and some other stuffs.
-
-RealAkito for reverse search modules.
-
-MrYacha for connections module
-
-ATechnoHazard for many stuffs
-
-corsicanu and nunopenim for android modules
-
-Any other missing Credits can be seen in commits!
-
 ## Starting the bot
 
 Once you've setup your database and your configuration (see below) is complete, simply run:
 
-`python3 -m skylee`
+`python3 -m elisa`
 
 
 ## Setting up the bot (Read this before trying to use!)
@@ -58,7 +25,7 @@ This is because markdown parsing is done by iterating through a dict, which are 
 There are two possible ways of configuring your bot: a config.py file, or ENV variables.
 
 The prefered version is to use a `config.py` file, as it makes it easier to see all your settings grouped together.
-This file should be placed in your `skylee` folder, alongside the `__main__.py` file . 
+This file should be placed in your `elisa` folder, alongside the `__main__.py` file . 
 This is where your bot token will be loaded from, as well as your database URI (if you're using a database), and most of 
 your other settings.
 
@@ -153,7 +120,7 @@ All that is needed is that your .py file be in the modules folder.
 
 To add commands, make sure to import the dispatcher via
 
-`from skylee import dispatcher`.
+`from elisa import dispatcher`.
 
 You can then add commands using the usual
 
