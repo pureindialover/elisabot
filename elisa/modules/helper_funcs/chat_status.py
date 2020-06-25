@@ -70,6 +70,20 @@ def can_pin(func):
     return pin_rights
 
 
+#can invite perm added by @pureindialover
+def can_invite(func):
+    @wraps(func)
+    def invite_rights(update, context, *args, **kwargs):
+        if update.effective_chat.get_member(context.bot.id).can_invite_users:
+            return func(update, context, *args, **kwargs)
+        else:
+            update.effective_message.reply_text("I can't get the invite link! "
+                                                "Make sure I'm admin and can invite users.")
+
+    return invite_rights
+
+
+
 def can_promote(func):
     @wraps(func)
     def promote_rights(update, context, *args, **kwargs):
