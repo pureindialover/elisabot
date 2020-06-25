@@ -12,7 +12,7 @@ from elisa import dispatcher
 from elisa.modules.disable import DisableAbleCommandHandler
 from elisa.modules.helper_funcs.chat_status import bot_admin, can_promote, user_admin, can_pin, can_invite
 from elisa.modules.helper_funcs.extraction import extract_user, extract_user_and_text
-from elisa.modules.helper_funcs.admin_rights import user_can_pin, user_can_promote, user_can_changeinfo
+from elisa.modules.helper_funcs.admin_rights import user_can_pin, user_can_promote, user_can_changeinfo, user_can_invite
 from elisa.modules.helper_funcs.alternate import typing_action
 from elisa.modules.connection import connected
 from elisa.modules.log_channel import loggable
