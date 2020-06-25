@@ -215,7 +215,7 @@ def invite(update, context):
                 msg = update.effective_message
                 user = update.effective_user
                 chat = update.effective_chat
-                if update.effective_chat.get_member(context.bot.id).can_invite_users is False:
+                if user_can_invite(chat, user, context.bot.id) is False:
     	                msg.reply_text("You don't have enough rights to get invite link!")
     	                return ""
         if chat.username:
