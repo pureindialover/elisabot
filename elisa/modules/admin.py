@@ -10,7 +10,7 @@ from telegram.utils.helpers import mention_html
 
 from elisa import dispatcher
 from elisa.modules.disable import DisableAbleCommandHandler
-from elisa.modules.helper_funcs.chat_status import bot_admin, can_promote, user_admin, can_pin
+from elisa.modules.helper_funcs.chat_status import bot_admin, can_promote, user_admin, can_pin, can_invite
 from elisa.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from elisa.modules.helper_funcs.admin_rights import user_can_pin, user_can_promote, user_can_changeinfo
 from elisa.modules.helper_funcs.alternate import typing_action
@@ -194,7 +194,7 @@ def unpin(update, context):
            "\n<b>Admin:</b> {}".format(html.escape(chat.title),
                                        mention_html(user.id, user.first_name))
 
-
+@can_invite
 @run_async
 @bot_admin
 @user_admin
