@@ -194,10 +194,11 @@ def unpin(update, context):
            "\n<b>Admin:</b> {}".format(html.escape(chat.title),
                                        mention_html(user.id, user.first_name))
 
-@can_invite
 @run_async
 @bot_admin
+@can_invite
 @user_admin
+@loggable
 @typing_action
 def invite(update, context):
         user = update.effective_user
