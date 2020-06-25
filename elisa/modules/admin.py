@@ -198,7 +198,6 @@ def unpin(update, context):
 @bot_admin
 @can_invite
 @user_admin
-@loggable
 @typing_action
 def invite(update, context):
         user = update.effective_user
