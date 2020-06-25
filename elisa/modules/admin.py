@@ -213,6 +213,7 @@ def invite(update, context):
                 if msg.chat.type == "private":
                         msg.reply_text("This command is meant to use in chat not in PM")
                         return ""
+        msg = update.effective_message
         user = update.effective_user
         chat = update.effective_chat
         if user_can_invite(chat, user, context.bot.id) is False:
