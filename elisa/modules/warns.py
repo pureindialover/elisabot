@@ -320,7 +320,6 @@ def list_warn_filters(update, context):
 
 
 @run_async
-@can_changeinfo
 @loggable
 def reply_filter(update, context) -> str:
     chat = update.effective_chat  # type: Optional[Chat]
