@@ -254,11 +254,6 @@ def gbanlist(update, context):
                                                 caption="Here is the list of currently gbanned users.")
 
 
-def check_and_ban(update, user_id, should_message=True):
-
-    except Exception:
-        pass
-
     if sql.is_user_gbanned(user_id):
         update.effective_chat.kick_member(user_id)
         if should_message:
