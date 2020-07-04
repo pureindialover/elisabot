@@ -256,9 +256,6 @@ def gbanlist(update, context):
 
 def check_and_ban(update, user_id, should_message=True):
 
-    
-           else:
-              return
     except Exception:
         pass
 
