@@ -14,6 +14,7 @@ from elisa.modules.disable import DisableAbleCommandHandler
 from elisa.modules.helper_funcs.chat_status import is_user_admin, bot_admin, user_admin_no_reply, user_admin, can_changeinfo, \
     can_restrict
 from elisa.modules.helper_funcs.extraction import extract_text, extract_user_and_text, extract_user
+from elisa.modules.helper_funcs.admin_rights import user_can_changeinfo
 from elisa.modules.helper_funcs.filters import CustomFilters
 from elisa.modules.helper_funcs.misc import split_message
 from elisa.modules.helper_funcs.string_handling import split_quotes
@@ -239,19 +240,25 @@ def warns(update, context):
 def add_warn_filter(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     msg = update.effective_message  # type: Optional[Message]
-
+    user = update.effective_user
     args = msg.text.split(None, 1)  # use python's maxsplit to separate Cmd, keyword, and reply_text
 
     if len(args) < 2:
         return
 
     extracted = split_quotes(args[1])
-
+    
     if len(extracted) >= 2:
         # set trigger -> lower, so as to avoid adding duplicate filters with different cases
         keyword = extracted[0].lower()
         content = extracted[1]
-
+    
+    args = context.args
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to add warn filter!")
+    	return ""
+    args = msg.text.split(None, 1)
+    
     else:
         return
 
