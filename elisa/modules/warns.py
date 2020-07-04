@@ -258,7 +258,6 @@ def add_warn_filter(update, context):
     	msg.reply_text("You don't have enough rights to add warn filter!")
     	return ""
     args = msg.text.split(None, 1)
-    
     else:
         return
 
