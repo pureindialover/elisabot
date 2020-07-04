@@ -13,7 +13,7 @@ from telegram.utils.helpers import mention_html
 import elisa.modules.sql.notes_sql as sql
 from elisa import dispatcher, MESSAGE_DUMP, LOGGER
 from elisa.modules.disable import DisableAbleCommandHandler
-from elisa.modules.helper_funcs.chat_status import user_admin, user_admin_no_reply
+from elisa.modules.helper_funcs.chat_status import user_admin, user_admin_no_reply, can_changeinfo
 from elisa.modules.helper_funcs.misc import build_keyboard, revert_buttons
 from elisa.modules.helper_funcs.msg_types import get_note_type
 from elisa.modules.helper_funcs.string_handling import escape_invalid_curly_brackets, markdown_to_html
@@ -160,7 +160,7 @@ def hash_get(update, context):
     no_hash = fst_word[1:].lower()
     get(context.bot, update, no_hash, show_none=False)
 
-
+@can_changeinfo
 @run_async
 @user_admin
 @typing_action
@@ -196,7 +196,7 @@ def save(update, context):
     msg.reply_text(
         "Saved '`{note_name}`' in *{chat_name}*.\nGet it with `/get {note_name}`, or `#{note_name}`!".format(note_name=note_name, chat_name=chat_name), parse_mode=ParseMode.MARKDOWN)
 
-
+@can_changeinfo
 @run_async
 @user_admin
 @typing_action
