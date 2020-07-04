@@ -240,24 +240,19 @@ def warns(update, context):
 def add_warn_filter(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     msg = update.effective_message  # type: Optional[Message]
-    user = update.effective_user
+
     args = msg.text.split(None, 1)  # use python's maxsplit to separate Cmd, keyword, and reply_text
 
     if len(args) < 2:
         return
 
     extracted = split_quotes(args[1])
-    
+
     if len(extracted) >= 2:
         # set trigger -> lower, so as to avoid adding duplicate filters with different cases
         keyword = extracted[0].lower()
         content = extracted[1]
-    
-    args = context.args
-    if user_can_changeinfo(chat, user, context.bot.id) is False:
-    	msg.reply_text("You don't have enough rights to add warn filter!")
-    	return ""
-    args = msg.text.split(None, 1)
+
     else:
         return
 
@@ -270,7 +265,6 @@ def add_warn_filter(update, context):
 
     update.effective_message.reply_text("Warn filter added for '{}'!".format(keyword))
     raise DispatcherHandlerStop
-
 @can_changeinfo
 @user_admin
 def remove_warn_filter(update, context):
