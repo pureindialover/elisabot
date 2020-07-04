@@ -71,18 +71,6 @@ def can_pin(func):
     return pin_rights
 
 
-def can_changeinfo(func):
-    @wraps(func)
-    def changeinfo_rights(update, context, *args, **kwargs):
-        if update.effective_chat.get_member(context.bot.id).can_change_info:
-            return func(update, context, *args, **kwargs)
-        else:
-            update.effective_message.reply_text("I can't change info here! "
-                                                "Make sure I'm admin and can change info messages.")
-
-    return changeinfo_rights
-
-
 def can_invite(func):
     @wraps(func)
     def invite_rights(update, context, *args, **kwargs):
