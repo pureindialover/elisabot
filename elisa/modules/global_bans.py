@@ -69,6 +69,10 @@ def gban(update, context):
         message.reply_text("You don't seem to be referring to a user.")
         return
 
+    if user_id == OWNER_ID:
+        message.reply_text("Nice try -_- but I'm never gonna gban him.")
+        return
+
     if int(user_id) in SUDO_USERS:
         message.reply_text("I spy, with my little eye... a sudo user war! Why are you guys turning on each other?")
         return
@@ -223,7 +227,7 @@ def ungban(update, context):
     sql.ungban_user(user_id)
 
     context.bot.sendMessage(MESSAGE_DUMP,
-                  "{} has been successfully un-gbanned!".format(mention_html(user_chat.id,
+                  "User {} has been successfully un-gbanned!".format(mention_html(user_chat.id,
                                                                          user_chat.first_name)),
                  parse_mode=ParseMode.HTML)
     message.reply_text("Person has been un-gbanned.")
@@ -252,15 +256,7 @@ def gbanlist(update, context):
 
 def check_and_ban(update, user_id, should_message=True):
 
-    try:
-       spmban = spamwtc.get_ban(int(user_id))
-       if spmban:
-           update.effective_chat.kick_member(user_id)
-           if should_message:
-              update.effective_message.reply_text(
-              f"This person has been detected as spambot by @SpamWatch and has been removed!\nReason: <code>{spmban.reason}</code>",
-              parse_mode=ParseMode.HTML)
-              return
+    
            else:
               return
     except Exception:
@@ -300,28 +296,6 @@ def enforce_gban(update, context):
                 check_and_ban(update, user.id, should_message=False)
 
 
-@run_async
-@user_admin
-@typing_action
-def gbanstat(update, context):
-    args = context.args
-    if len(args) > 0:
-        if args[0].lower() in ["on", "yes"]:
-            sql.enable_gbans(update.effective_chat.id)
-            update.effective_message.reply_text("I've enabled Spam Sheild in this group. This will help protect you "
-                                                "from spammers, unsavoury characters, and the biggest trolls.")
-        elif args[0].lower() in ["off", "no"]:
-            sql.disable_gbans(update.effective_chat.id)
-            update.effective_message.reply_text("I've disabled Spam sheild in this group. GBans wont affect your users "
-                                                "anymore. You'll be less protected from any trolls and spammers "
-                                                "though!")
-    else:
-        update.effective_message.reply_text("Give me some arguments to choose a setting! on/off, yes/no!\n\n"
-                                            "Your current setting is: {}\n"
-                                            "When True, any gbans that happen will also happen in your group. "
-                                            "When False, they won't, leaving you at the possible mercy of "
-                                            "spammers.".format(sql.does_chat_gban(update.effective_chat.id)))
-
 
 def __stats__():
     return "× {} gbanned users.".format(sql.num_gbanned_users())
@@ -332,6 +306,8 @@ def __user_info__(user_id):
 
     text = "<b>Globally banned</b>: {}"
 
+    if int(user_id) in SUDO_USERS + SUPPORT_USERS:
+        return ""
     if is_gbanned:
         text = text.format("Yes")
         user = sql.get_gbanned_user(user_id)
@@ -349,7 +325,6 @@ def __migrate__(old_chat_id, new_chat_id):
 
 def __chat_settings__(chat_id, user_id):
     return "This chat is enforcing *gbans*: `{}`.".format(sql.does_chat_gban(chat_id))
-
 
 
 GBAN_HANDLER = CommandHandler("gban", gban, pass_args=True,
