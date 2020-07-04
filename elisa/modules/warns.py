@@ -11,7 +11,7 @@ from telegram.utils.helpers import mention_html
 
 from elisa import dispatcher #BAN_STICKER
 from elisa.modules.disable import DisableAbleCommandHandler
-from elisa.modules.helper_funcs.chat_status import is_user_admin, bot_admin, user_admin_no_reply, user_admin, \
+from elisa.modules.helper_funcs.chat_status import is_user_admin, bot_admin, user_admin_no_reply, user_admin, can_changeinfo, \
     can_restrict
 from elisa.modules.helper_funcs.extraction import extract_text, extract_user_and_text, extract_user
 from elisa.modules.helper_funcs.admin_rights import user_can_changeinfo
