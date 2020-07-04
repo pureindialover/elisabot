@@ -265,7 +265,6 @@ def add_warn_filter(update, context):
 
     update.effective_message.reply_text("Warn filter added for '{}'!".format(keyword))
     raise DispatcherHandlerStop
-@can_changeinfo
 @user_admin
 def remove_warn_filter(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
