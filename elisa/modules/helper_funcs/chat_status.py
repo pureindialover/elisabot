@@ -1,7 +1,7 @@
 from functools import wraps
 from telegram import User, Chat, ChatMember
 
-from elisa import DEL_CMDS, SUDO_USERS, WHITELIST_USERS
+from elisa import DEL_CMDS, SUDO_USERS, WHITELIST_USERS, OWNER_ID
 from elisa.mwt import MWT
 
 def can_delete(chat: Chat, bot_id: int) -> bool:
@@ -11,6 +11,7 @@ def is_user_ban_protected(chat: Chat, user_id: int, member: ChatMember = None) -
     if chat.type == 'private' \
             or user_id in SUDO_USERS \
             or user_id in WHITELIST_USERS \
+            or user_id in OWNER_ID \
             or chat.all_members_are_administrators:
         return True
 
