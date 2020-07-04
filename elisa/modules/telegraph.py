@@ -4,7 +4,7 @@ from telegram import Message, Update, Bot, User
 from telegram import MessageEntity
 from telegram.ext import Filters, MessageHandler, run_async
 
-from wlisa import dispatcher, LOGGER
+from elisa import dispatcher, LOGGER
 from elisa.modules.disable import DisableAbleCommandHandler
 
 from telegraph import Telegraph, upload_file
