@@ -384,7 +384,7 @@ All regex filters can be disabled incase u don't want... like: `/disable metoo`.
 __mod_name__ = "Memes"
 
 SHRUG_HANDLER = DisableAbleCommandHandler("shrug", shrug)
-DECIDE_HANDLER = DisableAbleMessageHandler(Filters.regex(r"(?i)^skylee\?"), decide, friendly="decide")
+DECIDE_HANDLER = DisableAbleMessageHandler(Filters.regex(r"(?i)^elisa\?"), decide, friendly="decide")
 SNIPE_HANDLER = CommandHandler("snipe", snipe, pass_args=True, filters=CustomFilters.sudo_filter)
 ABUSE_HANDLER = DisableAbleCommandHandler("abuse", abuse)
 PORT_BUG_HANDLER = CommandHandler("bug", ports_bug)
