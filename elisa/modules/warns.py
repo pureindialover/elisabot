@@ -235,7 +235,6 @@ def warns(update, context):
 
 
 # Dispatcher handler stop - do not async
-@can_changeinfo
 @user_admin
 def add_warn_filter(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
