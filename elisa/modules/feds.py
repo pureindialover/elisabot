@@ -357,9 +357,7 @@ def fed_info(update, context):
 			return
 		info = sql.get_fed_info(fed_id)
 
-	if is_user_fed_admin(fed_id, user.id) == False:
-		update.effective_message.reply_text("Only a federation admin can do this!")
-		return
+	
 
 	owner = context.bot.get_chat(info['owner'])
 	try:
