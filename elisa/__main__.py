@@ -155,7 +155,7 @@ def start(update, context):
             PM_START_TEXT, reply_markup=InlineKeyboardMarkup(buttons),
             parse_mode=ParseMode.MARKDOWN, timeout=60, disable_web_page_preview=True)
     else:
-        update.effective_message.reply_text("Sending you a warm hi & wishing your day is a happy one!")
+        update.effective_message.reply_text("Hi I am on!")
 
 
 def error_handler(update, context):
