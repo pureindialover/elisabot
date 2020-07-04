@@ -12,12 +12,13 @@ from telegraph import Telegraph, upload_file
 @run_async
 def media_telegraph(bot: Bot, update: Update):
     msg = update.effective_message # type: Optional[Message]
-
+    args = context.args
 
 @run_async
 def post_telegraph(bot: Bot, update: Update, args: List[str]):
     short_name = "Created By @MissElisaBot 😬"
     msg = update.effective_message # type: Optional[Message]
+    args = context.args
     telegraph = Telegraph()
     r = telegraph.create_account(short_name=short_name)
     auth_url = r["auth_url"]
