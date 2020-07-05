@@ -679,11 +679,7 @@ WELC_HELP_TXT = "Your group's welcome/goodbye messages can be personalised in mu
 @user_admin
 @typing_action
 def welcome_help(update, context):
-    chat = update.effective_chat  # type: Optional[Chat]
-    if chat.type != "private":
-		update.effective_message.reply_text("You can use this command in my PM, not in a group.")
-		return
-    else update.effective_message.reply_text(WELC_HELP_TXT, parse_mode=ParseMode.MARKDOWN)
+    update.effective_message.reply_text(WELC_HELP_TXT, parse_mode=ParseMode.MARKDOWN)
 
 
 # TODO: get welcome data from group butler snap
