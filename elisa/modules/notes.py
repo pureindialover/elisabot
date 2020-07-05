@@ -14,6 +14,7 @@ import elisa.modules.sql.notes_sql as sql
 from elisa import dispatcher, MESSAGE_DUMP, LOGGER
 from elisa.modules.disable import DisableAbleCommandHandler
 from elisa.modules.helper_funcs.chat_status import user_admin, user_admin_no_reply, can_changeinfo
+from elisa.modules.helper_funcs.admin_rights import user_can_changeinfo
 from elisa.modules.helper_funcs.misc import build_keyboard, revert_buttons
 from elisa.modules.helper_funcs.msg_types import get_note_type
 from elisa.modules.helper_funcs.string_handling import escape_invalid_curly_brackets, markdown_to_html
@@ -166,11 +167,17 @@ def hash_get(update, context):
 @typing_action
 def save(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
+    message = update.effective_message
     user = update.effective_user  # type: Optional[User]
     conn = connected(context.bot, update, chat, user.id)
     if not conn == False:
         chat_id = conn
         chat_name = dispatcher.bot.getChat(conn).title
+    
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	message.reply_text("You don't have enough rights to save notes!")
+    	return ""
+    
     else:
         chat_id = update.effective_chat.id
         if chat.type == "private":
@@ -211,6 +218,9 @@ def clear(update, context):
     if not conn == False:
         chat_id = conn
         chat_name = dispatcher.bot.getChat(conn).title
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to clear notes!")
+    	return ""
     else:
         chat_id = update.effective_chat.id
         if chat.type == "private":
@@ -250,7 +260,7 @@ def list_notes(update, context):
     note_list = sql.get_all_chat_notes(chat_id)
     des = "You can get notes by using `/get notename`, or `#notename`.\n"
     for note in note_list:
-        note_name = " × `{}`\n".format(note.name.lower())
+        note_name = "  `#{}`\n".format(note.name.lower())
         if len(msg) + len(note_name) > MAX_MESSAGE_LENGTH:
             update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
             msg = ""
