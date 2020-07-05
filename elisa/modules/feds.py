@@ -392,21 +392,10 @@ def fed_admin(update, context):
     user = update.effective_user  # type: Optional[User]
     args = context.args
 
-    if chat.type == "private":
-        send_message(
-            update.effective_message,
-            "This command is specific to the group, not to the PM! ",
-        )
-        return
-
     fed_id = sql.get_fed_id(chat.id)
 
     if not fed_id:
         update.effective_message.reply_text("This group is not in any federation!")
-        return
-
-    if is_user_fed_admin(fed_id, user.id) == False:
-        update.effective_message.reply_text("Only federation admins can do this!")
         return
 
     user = update.effective_user  # type: Optional[Chat]
@@ -441,11 +430,7 @@ def fed_ban(update, context):
 	chat = update.effective_chat  # type: Optional[Chat]
 	user = update.effective_user  # type: Optional[User]
 	args = context.args
-
-	if chat.type == 'private':
-		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
-		return
-
+	
 	fed_id = sql.get_fed_id(chat.id)
 
 	if not fed_id:
@@ -739,10 +724,6 @@ def unfban(update, context):
 	message = update.effective_message  # type: Optional[Message]
 	args = context.args
 
-	if chat.type == 'private':
-		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
-		return
-
 	fed_id = sql.get_fed_id(chat.id)
 
 	if not fed_id:
@@ -910,10 +891,6 @@ def set_frules(update, context):
 	user = update.effective_user  # type: Optional[User]
 	args = context.args
 
-	if chat.type == 'private':
-		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
-		return
-
 	fed_id = sql.get_fed_id(chat.id)
 
 	if not fed_id:
@@ -953,11 +930,7 @@ def set_frules(update, context):
 def get_frules(update, context):
 	chat = update.effective_chat  # type: Optional[Chat]
 	args = context.args
-
-	if chat.type == 'private':
-		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
-		return
-
+	
 	fed_id = sql.get_fed_id(chat.id)
 	if not fed_id:
 		update.effective_message.reply_text("This chat is not in any federation!")
@@ -977,9 +950,9 @@ def fed_broadcast(update, context):
 	chat = update.effective_chat  # type: Optional[Chat]
 	args = context.args
 
-	if chat.type == 'private':
-		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
-		return
+	if is_user_fed_owner(fed_id, user.id) == False:
+	       update.effective_message.reply_text("Only Federation owners can do this!")
+	       return
 
 	if args:
 		chat = update.effective_chat  # type: Optional[Chat]
@@ -1026,10 +999,6 @@ def fed_ban_list(update, context):
 	user = update.effective_user  # type: Optional[User]
 	args = context.args
 	chat_data = context.chat_data
-
-	if chat.type == 'private':
-		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
-		return
 
 	fed_id = sql.get_fed_id(chat.id)
 	info = sql.get_fed_info(fed_id)
@@ -1170,10 +1139,6 @@ def fed_chats(update, context):
 	user = update.effective_user  # type: Optional[User]
 	args = context.args
 
-	if chat.type == 'private':
-		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
-		return
-
 	fed_id = sql.get_fed_id(chat.id)
 	info = sql.get_fed_info(fed_id)
 
@@ -1217,10 +1182,6 @@ def fed_import_bans(update, context):
 	user = update.effective_user  # type: Optional[User]
 	msg = update.effective_message  # type: Optional[Message]
 	chat_data = context.chat_data
-
-	if chat.type == 'private':
-		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
-		return
 
 	fed_id = sql.get_fed_id(chat.id)
 	info = sql.get_fed_info(fed_id)
@@ -1557,10 +1518,6 @@ def subs_feds(update, context):
 	msg = update.effective_message  # type: Optional[Message]
 	args = context.args
 
-	if chat.type == 'private':
-		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
-		return
-
 	fed_id = sql.get_fed_id(chat.id)
 	fedinfo = sql.get_fed_info(fed_id)
 
@@ -1596,10 +1553,6 @@ def unsubs_feds(update, context):
 	user = update.effective_user  # type: Optional[User]
 	msg = update.effective_message  # type: Optional[Message]
 	args = context.args
-
-	if chat.type == 'private':
-		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
-		return
 
 	fed_id = sql.get_fed_id(chat.id)
 	fedinfo = sql.get_fed_info(fed_id)
@@ -1637,9 +1590,6 @@ def get_myfedsubs(update, context):
 	msg = update.effective_message  # type: Optional[Message]
 	args = context.args
 
-	if chat.type == 'private':
-		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
-		return
 
 	fed_id = sql.get_fed_id(chat.id)
 	fedinfo = sql.get_fed_info(fed_id)
