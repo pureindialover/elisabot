@@ -1,8 +1,11 @@
 from elisa import client, SUDO_USERS
 from elisa.modules.helper_funcs.admin_rights import user_can_delete
 
-from telegram import Message, User
-
+from telegram import Message, User, Update
+from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.error import BadRequest
+from telegram.ext import CommandHandler, run_async, Filters
+from telegram.utils.helpers import escape_markdown
 import asyncio
 from telethon import events
 from telethon.tl.types import ChannelParticipantsAdmins
@@ -21,7 +24,7 @@ async def is_administrator(user_id: int, message):
 
 
 @client.on(events.NewMessage(pattern="^/purge"))
-async def purge(event, update):
+async def purge(event, update, context):
     msg = update.effective_message  # type: Optional[Message]
     user = update.effective_user  # type: Optional[User]
     chat = update.effective_chat  # type: Optional[Chat]
@@ -69,7 +72,7 @@ async def purge(event, update):
 
 
 @client.on(events.NewMessage(pattern="^/del$"))
-async def delete_msg(event):
+async def delete_msg(event, update, context):
     msg = update.effective_message  # type: Optional[Message]
     user = update.effective_user  # type: Optional[User]
     chat = update.effective_chat  # type: Optional[Chat]
