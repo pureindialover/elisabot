@@ -1,13 +1,5 @@
 from elisa import client, SUDO_USERS
-from elisa.modules.helper_funcs.admin_rights import user_can_delete
-from elisa import dispatcher
-from elisa.modules.helper_funcs.string_handling import markdown_parser
-from elisa.modules.helper_funcs.alternate import typing_action
-from telegram import Message, User, Update
-from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.error import BadRequest
-from telegram.ext import CommandHandler, run_async, Filters
-from telegram.utils.helpers import escape_markdown
+
 import asyncio
 from telethon import events
 from telethon.tl.types import ChannelParticipantsAdmins
@@ -26,14 +18,7 @@ async def is_administrator(user_id: int, message):
 
 
 @client.on(events.NewMessage(pattern="^/purge"))
-async def purge(event, update):
-    msg = update.effective_message  # type: Optional[Message]
-    user = update.effective_user  # type: Optional[User]
-    chat = update.effective_chat  # type: Optional[Chat]
-    if user_can_delete(chat, user, context.bot.id) is False:
-    	msg.reply_text("You don't have enough rights to delete messages!")
-    	return ""
-    
+async def purge(event):
     chat = event.chat_id
     msgs = []
 
@@ -74,13 +59,8 @@ async def purge(event, update):
 
 
 @client.on(events.NewMessage(pattern="^/del$"))
-async def delete_msg(event, update):
-    msg = update.effective_message  # type: Optional[Message]
-    user = update.effective_user  # type: Optional[User]
-    chat = update.effective_chat  # type: Optional[Chat]
-    if user_can_delete(chat, user, context.bot.id) is False:
-    	msg.reply_text("You don't have enough rights to delete messages!")
-    	return ""
+async def delete_msg(event):
+
     if not await is_administrator(user_id=event.from_id, message=event):
         await event.reply("You're not an admin!")
         return
