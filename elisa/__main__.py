@@ -14,7 +14,7 @@ from elisa import dispatcher, updater, TOKEN, WEBHOOK, CERT_PATH, PORT, URL, LOG
 # needed to dynamically load modules
 # NOTE: Module order is not guaranteed, specify that in the config file!
 from elisa.modules import ALL_MODULES
-from elisa.modules.purge import client
+from elisa import client
 from elisa.modules.helper_funcs.chat_status import is_user_admin
 from elisa.modules.helper_funcs.misc import paginate_modules
 from elisa.modules.helper_funcs.alternate import typing_action
