@@ -161,7 +161,7 @@ def hash_get(update, context):
     no_hash = fst_word[1:].lower()
     get(context.bot, update, no_hash, show_none=False)
 
-@can_changeinfo
+
 @run_async
 @user_admin
 @typing_action
@@ -203,7 +203,7 @@ def save(update, context):
     msg.reply_text(
         "Saved '`{note_name}`' in *{chat_name}*.\nGet it with `/get {note_name}`, or `#{note_name}`!".format(note_name=note_name, chat_name=chat_name), parse_mode=ParseMode.MARKDOWN)
 
-@can_changeinfo
+
 @run_async
 @user_admin
 @typing_action
