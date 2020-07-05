@@ -1,95 +1,93 @@
-from elisa import client, SUDO_USERS
-from elisa.modules.helper_funcs.admin_rights import user_can_delete
+import html
+from typing import Optional, List
 
-import asyncio
-from telethon import events
-from telethon.tl.types import ChannelParticipantsAdmins
-from telethon.errors.rpcerrorlist import MessageDeleteForbiddenError
+from telegram import Message, Chat, Update, Bot, User
+from telegram.error import BadRequest
+from telegram.ext import CommandHandler, Filters
+from telegram.ext.dispatcher import run_async
+from telegram.utils.helpers import mention_html
 
-# Check if user has admin rights
-async def is_administrator(user_id: int, message):
-    admin = False
-    async for user in client.iter_participants(message.chat_id,
-                             filter=ChannelParticipantsAdmins):
-        if user_id == user.id or user_id in SUDO_USERS:
-            admin = True
-            break
-    return admin
+from elisa import dispatcher, LOGGER
+from elisa.modules.helper_funcs.chat_status import user_admin, can_delete
+from elisa.modules.log_channel import loggable
 
 
-@client.on(events.NewMessage(pattern='^/purge'))
-async def purge(event):
-        message = update.effective_message
-        chat = update.effective_chat
-        user = update.effective_user
-        
-        if user_can_delete(chat, user, context.bot.id) is False:
-    	message.reply_text("You don't have enough rights to delete messages!")
-    	return ""
-        
-        chat = event.chat_id
-        msgs = []
-
-        if not await is_administrator(user_id=event.from_id, message=event):
-           await event.reply("You're not an admin!")
-           return
-
-        msg = await event.get_reply_message()
-        if not msg:
-           await event.reply("Reply to a message to select where to start purging from.")
-           return
-
-        try:
-           msg_id = msg.id
-           to_delete = event.message.id - 1
-           await event.client.delete_messages(chat, event.message.id)
-           msgs.append(event.reply_to_msg_id)
-           for m_id in range(to_delete, msg_id - 1, -1):
-               msgs.append(m_id)
-               if len(msgs) == 100:
-                   await event.client.delete_messages(chat, msgs)
-                   msgs = []
-
-           await event.client.delete_messages(chat, msgs)
-           del_res = await event.client.send_message(
-           event.chat_id, "Flash purge complete!")
-
-           await asyncio.sleep(4)
-           await del_res.delete()
-
-        except MessageDeleteForbiddenError:
-            text = "Failed to delete messages.\n"
-            text += "Messages maybe too old or I'm not admin! or dont have delete rights!"
-            del_res = await event.respond(text, parse_mode='md')
-            await asyncio.sleep(5)
-            await del_res.delete()
-
-
-@client.on(events.NewMessage(pattern="^/del$"))
-async def delete_msg(event):
-    message = update.effective_message
-    chat = update.effective_chat
-    user = update.effective_user
-    
+@run_async
+@user_admin
+@loggable
+def purge(bot: Bot, update: Update, args: List[str]) -> str:
+    msg = update.effective_message  # type: Optional[Message]
+    user = update.effective_user  # type: Optional[User]
+    chat = update.effective_chat  # type: Optional[Chat]
     if user_can_delete(chat, user, context.bot.id) is False:
-    	message.reply_text("You don't have enough rights to delete messages!")
+    	msg.reply_text("You don't have enough rights to delete messages!")
     	return ""
-    
-    
-    if not await is_administrator(user_id=event.from_id, message=event):
-        await event.reply("You're not an admin!")
-        return
+    if msg.reply_to_message:
+        if can_delete(chat, bot.id):
+            message_id = msg.reply_to_message.message_id
+            if args and args[0].isdigit():
+                delete_to = message_id + int(args[0])
+            else:
+                delete_to = msg.message_id - 1
+            for m_id in range(delete_to, message_id - 1, -1):  # Reverse iteration over message ids
+                try:
+                    bot.deleteMessage(chat.id, m_id)
+                except BadRequest as err:
+                    if err.message == "Message can't be deleted":
+                        bot.send_message(chat.id, "Cannot delete all messages. The messages may be too old, I might "
+                                                  "not have delete rights, or this might not be a supergroup.")
 
-    chat = event.chat_id
-    msg = await event.get_reply_message()
-    if not msg:
-        await event.reply("Reply to some message to delete it.")
-        return
-    to_delete = event.message
-    chat = await event.get_input_chat()
-    rm = [msg, to_delete]
-    await event.client.delete_messages(chat, rm)
+                    elif err.message != "Message to delete not found":
+                        LOGGER.exception("Error while purging chat messages.")
 
+            try:
+                msg.delete()
+            except BadRequest as err:
+                if err.message == "Message can't be deleted":
+                    bot.send_message(chat.id, "Cannot delete all messages. The messages may be too old, I might "
+                                              "not have delete rights, or this might not be a supergroup.")
+
+                elif err.message != "Message to delete not found":
+                    LOGGER.exception("Error while purging chat messages.")
+
+            return "<b>{}:</b>" \
+                   "\n#PURGE" \
+                   "\n<b>Admin:</b> {}" \
+                   "\nPurged <code>{}</code> messages.".format(html.escape(chat.title),
+                                                               mention_html(user.id, user.first_name),
+                                                               delete_to - message_id)
+
+    else:
+        msg.reply_text("Reply to a message to select where to start purging from.")
+
+    return ""
+
+
+@run_async
+@user_admin
+@loggable
+def del_message(bot: Bot, update: Update) -> str:
+    msg = update.effective_message  # type: Optional[Message]
+    user = update.effective_user  # type: Optional[User]
+    chat = update.effective_chat  # type: Optional[Chat]
+    if user_can_delete(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to delete messages!")
+    	return ""
+    if update.effective_message.reply_to_message:
+        user = update.effective_user  # type: Optional[User]
+        chat = update.effective_chat  # type: Optional[Chat]
+        if can_delete(chat, bot.id):
+            update.effective_message.reply_to_message.delete()
+            update.effective_message.delete()
+            return "<b>{}:</b>" \
+                   "\n#DEL" \
+                   "\n<b>Admin:</b> {}" \
+                   "\nMessage deleted.".format(html.escape(chat.title),
+                                               mention_html(user.id, user.first_name))
+    else:
+        update.effective_message.reply_text("what should i delete?")
+
+    return ""
 
 
 __help__ = """
@@ -97,8 +95,15 @@ Deleting messages made easy with this command. Bot purges \
 messages all together or individually.
 
 *Admin only:*
- × /del: Deletes the message you replied to
- × /purge: Deletes all messages between this and the replied to message.
+ - /del: deletes the message you replied to
+ - /purge: deletes all messages between this and the replied to message.
+ - /purge <integer X>: deletes the replied message, and X messages following it.
 """
 
 __mod_name__ = "Purges"
+
+DELETE_HANDLER = CommandHandler("del", del_message, filters=Filters.group)
+PURGE_HANDLER = CommandHandler("purge", purge, filters=Filters.group, pass_args=True)
+
+dispatcher.add_handler(DELETE_HANDLER)
+dispatcher.add_handler(PURGE_HANDLER)
