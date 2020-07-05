@@ -1,4 +1,5 @@
 from elisa import client, SUDO_USERS
+from elisa.modules.helper_funcs.admin_rights import user_can_delete
 
 import asyncio
 from telethon import events
@@ -18,6 +19,14 @@ async def is_administrator(user_id: int, message):
 
 @client.on(events.NewMessage(pattern='^/purge'))
 async def purge(event):
+        message = update.effective_message
+        chat = update.effective_chat
+        user = update.effective_user
+        
+        if user_can_delete(chat, user, context.bot.id) is False:
+    	message.reply_text("You don't have enough rights to delete messages!")
+    	return ""
+        
         chat = event.chat_id
         msgs = []
 
@@ -58,7 +67,15 @@ async def purge(event):
 
 @client.on(events.NewMessage(pattern="^/del$"))
 async def delete_msg(event):
-
+    message = update.effective_message
+    chat = update.effective_chat
+    user = update.effective_user
+    
+    if user_can_delete(chat, user, context.bot.id) is False:
+    	message.reply_text("You don't have enough rights to delete messages!")
+    	return ""
+    
+    
     if not await is_administrator(user_id=event.from_id, message=event):
         await event.reply("You're not an admin!")
         return
