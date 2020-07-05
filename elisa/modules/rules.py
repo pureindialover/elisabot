@@ -9,6 +9,7 @@ from telegram.utils.helpers import escape_markdown
 import elisa.modules.sql.rules_sql as sql
 from elisa import dispatcher
 from elisa.modules.helper_funcs.chat_status import user_admin
+from elisa.modules.helper_funcs.admin_rights import user_can_changeinfo
 from elisa.modules.helper_funcs.string_handling import markdown_parser
 from elisa.modules.helper_funcs.alternate import typing_action
 
@@ -61,6 +62,11 @@ def set_rules(update, context):
     msg = update.effective_message  # type: Optional[Message]
     raw_text = msg.text
     args = raw_text.split(None, 1)  # use python's maxsplit to separate cmd and args
+    user = update.effective_user  # type: Optional[User]
+    chat = update.effective_chat
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to set rules!")
+    	return ""
     if len(args) == 2:
         txt = args[1]
         offset = len(txt) - len(raw_text)  # set correct offset relative to command
@@ -74,6 +80,12 @@ def set_rules(update, context):
 @user_admin
 @typing_action
 def clear_rules(update, context):
+    msg = update.effective_message
+    user = update.effective_user  # type: Optional[User]
+    chat = update.effective_chat
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to clear rules!")
+    	return ""
     chat_id = update.effective_chat.id
     sql.set_rules(chat_id, "")
     update.effective_message.reply_text("Successfully cleared rules!")
