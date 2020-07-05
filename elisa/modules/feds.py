@@ -424,14 +424,14 @@ def fed_admin(update, context):
 
     members = sql.all_fed_members(fed_id)
     if len(members) == 0:
-		text += "\n🔱 There is no admin in this federation"
-	else:
-		text += "\n🔱 Admin:\n"
-		for x in members:
-			user = bot.get_chat(x) 
-			text += " • {}\n".format(mention_html(user.id, user.first_name))
-    
-update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
+        text += "\n🔱 There is no admin in this federation"
+    else:
+        text += "\n🔱 Admin:\n"
+        for x in members:
+            user = context.bot.get_chat(x)
+            text += " • {}\n".format(mention_html(user.id, user.first_name))
+
+    update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
 
 
 @run_async
