@@ -388,47 +388,50 @@ def fed_info(update, context):
 @typing_action
 def fed_admin(update, context):
 
-	chat = update.effective_chat  # type: Optional[Chat]
-	user = update.effective_user  # type: Optional[User]
-	args = context.args
+    chat = update.effective_chat  # type: Optional[Chat]
+    user = update.effective_user  # type: Optional[User]
+    args = context.args
 
-	if chat.type == 'private':
-		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
-		return
+    if chat.type == "private":
+        send_message(
+            update.effective_message,
+            "This command is specific to the group, not to the PM! ",
+        )
+        return
 
-	fed_id = sql.get_fed_id(chat.id)
+    fed_id = sql.get_fed_id(chat.id)
 
-	if not fed_id:
-		update.effective_message.reply_text("This group is not in any federation!")
-		return
+    if not fed_id:
+        update.effective_message.reply_text("This group is not in any federation!")
+        return
 
-	if is_user_fed_admin(fed_id, user.id) == False:
-		update.effective_message.reply_text("Only federation admins can do this!")
-		return
+    if is_user_fed_admin(fed_id, user.id) == False:
+        update.effective_message.reply_text("Only federation admins can do this!")
+        return
 
-	user = update.effective_user  # type: Optional[Chat]
-	chat = update.effective_chat  # type: Optional[Chat]
-	info = sql.get_fed_info(fed_id)
+    user = update.effective_user  # type: Optional[Chat]
+    chat = update.effective_chat  # type: Optional[Chat]
+    info = sql.get_fed_info(fed_id)
 
-	text = "<b>Federation Admin {}:</b>\n\n".format(info['fname'])
-	text += "👑 Owner:\n"
-	owner = context.bot.get_chat(info['owner'])
-	try:
-		owner_name = owner.first_name + " " + owner.last_name
-	except:
-		owner_name = owner.first_name
-	text += " • {}\n".format(mention_html(owner.id, owner_name))
+    text = "<b>Federation Admin {}:</b>\n\n".format(info["fname"])
+    text += "👑 Owner:\n"
+    owner = context.bot.get_chat(info["owner"])
+    try:
+        owner_name = owner.first_name + " " + owner.last_name
+    except:
+        owner_name = owner.first_name
+    text += " • {}\n".format(mention_html(owner.id, owner_name))
 
-	members = sql.all_fed_members(fed_id)
-	if len(members) == 0:
-		text += "\n🔱 There is no admin in this federation"
-	else:
-		text += "\n🔱 Admin:\n"
-		for x in members:
-			user = context.bot.get_chat(x)
-			text += " • {}\n".format(mention_html(user.id, user.first_name))
+    members = sql.all_fed_members(fed_id)
+    if len(members) == 0:
+        text += "\n🔱 There is no admin in this federation"
+    else:
+        text += "\n🔱 Admin:\n"
+        for x in members:
+            user = context.bot.get_chat(x)
+            text += " • {}\n".format(mention_html(user.id, user.first_name))
 
-	update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
+    update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
 
 
 @run_async
