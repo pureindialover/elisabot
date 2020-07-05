@@ -9,6 +9,7 @@ from telegram.utils.helpers import mention_html
 
 from elisa import dispatcher, LOGGER
 from elisa.modules.helper_funcs.chat_status import user_admin, can_delete
+from elisa.modules.helper_funcs.admin_rights import user_can_delete
 from elisa.modules.log_channel import loggable
 
 
