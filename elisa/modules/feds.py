@@ -433,6 +433,12 @@ def fed_ban(update, context):
 	
 	fed_id = sql.get_fed_id(chat.id)
 
+	
+
+	if chat.type == 'private':
+		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
+		return
+	
 	if not fed_id:
 		update.effective_message.reply_text("This group is not a part of any federation!")
 		return
@@ -444,6 +450,7 @@ def fed_ban(update, context):
 		update.effective_message.reply_text("Only federation admins can do this!")
 		return
 
+	
 	message = update.effective_message  # type: Optional[Message]
 
 	user_id, reason = extract_unt_fedban(message, args)
@@ -724,8 +731,14 @@ def unfban(update, context):
 	message = update.effective_message  # type: Optional[Message]
 	args = context.args
 
+	
 	fed_id = sql.get_fed_id(chat.id)
 
+	
+	if chat.type == 'private':
+		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
+		return
+	
 	if not fed_id:
 		update.effective_message.reply_text("This group is not a part of any federation!")
 		return
@@ -893,6 +906,11 @@ def set_frules(update, context):
 
 	fed_id = sql.get_fed_id(chat.id)
 
+	
+	if chat.type == 'private':
+		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
+		return
+	
 	if not fed_id:
 		update.effective_message.reply_text("This chat is not in any federation!")
 		return
@@ -954,6 +972,11 @@ def fed_broadcast(update, context):
 	       update.effective_message.reply_text("Only Federation owners can do this!")
 	       return
 
+	
+	if chat.type == 'private':
+		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
+		return
+	
 	if args:
 		chat = update.effective_chat  # type: Optional[Chat]
 		fed_id = sql.get_fed_id(chat.id)
@@ -1003,6 +1026,11 @@ def fed_ban_list(update, context):
 	fed_id = sql.get_fed_id(chat.id)
 	info = sql.get_fed_info(fed_id)
 
+	
+	if chat.type == 'private':
+		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
+		return
+	
 	if not fed_id:
 		update.effective_message.reply_text("This group is not a part of any federation!")
 		return
@@ -1142,6 +1170,10 @@ def fed_chats(update, context):
 	fed_id = sql.get_fed_id(chat.id)
 	info = sql.get_fed_info(fed_id)
 
+	if chat.type == 'private':
+		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
+		return
+	
 	if not fed_id:
 		update.effective_message.reply_text("This group is not a part of any federation!")
 		return
@@ -1187,6 +1219,10 @@ def fed_import_bans(update, context):
 	info = sql.get_fed_info(fed_id)
 	getfed = sql.get_fed_info(fed_id)
 
+	if chat.type == 'private':
+		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
+		return
+	
 	if not fed_id:
 		update.effective_message.reply_text("This group is not a part of any federation!")
 		return
@@ -1521,6 +1557,10 @@ def subs_feds(update, context):
 	fed_id = sql.get_fed_id(chat.id)
 	fedinfo = sql.get_fed_info(fed_id)
 
+	if chat.type == 'private':
+		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
+		return
+	
 	if not fed_id:
 		send_message(update.effective_message, "This chat is not in any federation!")
 		return
@@ -1557,6 +1597,10 @@ def unsubs_feds(update, context):
 	fed_id = sql.get_fed_id(chat.id)
 	fedinfo = sql.get_fed_info(fed_id)
 
+	if chat.type == 'private':
+		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
+		return
+	
 	if not fed_id:
 		send_message(update.effective_message, "This chat is not in any federation!")
 		return
@@ -1594,6 +1638,10 @@ def get_myfedsubs(update, context):
 	fed_id = sql.get_fed_id(chat.id)
 	fedinfo = sql.get_fed_info(fed_id)
 
+	if chat.type == 'private':
+		send_message(update.effective_message, "This command is specific to the group, not to the PM! ")
+		return
+	
 	if not fed_id:
 		send_message(update.effective_message, "This chat is not in any federation!")
 		return
