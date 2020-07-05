@@ -1,6 +1,8 @@
 from elisa import client, SUDO_USERS
 from elisa.modules.helper_funcs.admin_rights import user_can_delete
 
+from telegram import Message, User
+
 import asyncio
 from telethon import events
 from telethon.tl.types import ChannelParticipantsAdmins
@@ -19,7 +21,7 @@ async def is_administrator(user_id: int, message):
 
 
 @client.on(events.NewMessage(pattern="^/purge"))
-async def purge(event):
+async def purge(event, update):
     msg = update.effective_message  # type: Optional[Message]
     user = update.effective_user  # type: Optional[User]
     chat = update.effective_chat  # type: Optional[Chat]
