@@ -428,7 +428,7 @@ def fed_admin(update, context):
     else:
         text += "\n🔱 Admin:\n"
         for x in members:
-            user = context.bot.get_chat(x)
+            user = context.bot.get_chat
             text += " • {}\n".format(mention_html(user.id, user.first_name))
 
     update.effective_message.reply_text(text, parse_mode=ParseMode.HTML)
