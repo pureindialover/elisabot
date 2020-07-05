@@ -11,6 +11,7 @@ import elisa.modules.sql.welcome_sql as sql
 from elisa.modules.sql.global_bans_sql import is_user_gbanned
 from elisa import dispatcher, OWNER_ID, LOGGER, MESSAGE_DUMP
 from elisa.modules.helper_funcs.chat_status import user_admin, is_user_ban_protected
+from elisa.modules.helper_funcs.admin_rights import user_can_changeinfo
 from elisa.modules.helper_funcs.misc import build_keyboard, revert_buttons
 from elisa.modules.helper_funcs.msg_types import get_welcome_type
 from elisa.modules.helper_funcs.alternate import typing_action
@@ -404,6 +405,10 @@ def set_welcome(update, context) -> str:
 
     text, data_type, content, buttons = get_welcome_type(msg)
 
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to save welcome!")
+    	return ""
+    
     if data_type is None:
         msg.reply_text("You didn't specify what to reply with!")
         return ""
@@ -425,6 +430,12 @@ def set_welcome(update, context) -> str:
 def reset_welcome(update, context) -> str:
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
+    msg = update.effective_message
+    
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to clear welcome!")
+    	return ""
+    
     sql.set_custom_welcome(chat.id, sql.DEFAULT_WELCOME, sql.Types.TEXT)
     update.effective_message.reply_text("Successfully reset welcome message to default!")
     return "<b>{}:</b>" \
@@ -444,6 +455,10 @@ def set_goodbye(update, context) -> str:
     msg = update.effective_message  # type: Optional[Message]
     text, data_type, content, buttons = get_welcome_type(msg)
 
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to save goodbye!")
+    	return ""
+    
     if data_type is None:
         msg.reply_text("You didn't specify what to reply with!")
         return ""
@@ -464,6 +479,12 @@ def set_goodbye(update, context) -> str:
 def reset_goodbye(update, context) -> str:
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
+    msg = update.effective_message # type: Optional[Message]
+    
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to clear goodbye!")
+    	return ""
+    
     sql.set_custom_gdbye(chat.id, sql.DEFAULT_GOODBYE, sql.Types.TEXT)
     update.effective_message.reply_text("Successfully reset goodbye message to default!")
     return "<b>{}:</b>" \
@@ -482,6 +503,10 @@ def welcomemute(update, context) -> str:
     msg = update.effective_message # type: Optional[Message]
     args = context.args
 
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to switch on welcomemute!")
+    	return ""
+    
     if len(args) >= 1:
         if  args[0].lower() in ("off", "no"):
             sql.set_welcome_mutes(chat.id, False)
@@ -524,8 +549,13 @@ def welcomemute(update, context) -> str:
 def clean_welcome(update, context) -> str:
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
+    msg = update.effective_message # type: Optional[Message]
     args = context.args
 
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to change welcome settings!")
+    	return ""
+    
     if not args:
         clean_pref = sql.get_clean_pref(chat.id)
         if clean_pref:
@@ -561,7 +591,14 @@ def clean_welcome(update, context) -> str:
 @typing_action
 def cleanservice(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
+    user = update.effective_user  # type: Optional[User]
+    msg = update.effective_message # type: Optional[Message]
     args = context.args
+    
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to change welcome settings!")
+    	return ""
+    
     if chat.type != chat.PRIVATE:
         if len(args) >= 1:
             var = args[0]
@@ -642,7 +679,11 @@ WELC_HELP_TXT = "Your group's welcome/goodbye messages can be personalised in mu
 @user_admin
 @typing_action
 def welcome_help(update, context):
-    update.effective_message.reply_text(WELC_HELP_TXT, parse_mode=ParseMode.MARKDOWN)
+    chat = update.effective_chat  # type: Optional[Chat]
+    if chat.type != "private":
+		update.effective_message.reply_text("You can use this command in my PM, not in a group.")
+		return
+    else update.effective_message.reply_text(WELC_HELP_TXT, parse_mode=ParseMode.MARKDOWN)
 
 
 # TODO: get welcome data from group butler snap
