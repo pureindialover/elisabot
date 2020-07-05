@@ -16,7 +16,7 @@ from elisa.modules.log_channel import loggable
 @run_async
 @user_admin
 @loggable
-def purge(bot: Bot, update: Update, args: List[str]) -> str:
+def purge(bot: Bot, update: Update, *args, **kwargs:
     msg = update.effective_message  # type: Optional[Message]
     user = update.effective_user  # type: Optional[User]
     chat = update.effective_chat  # type: Optional[Chat]
