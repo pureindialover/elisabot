@@ -968,6 +968,8 @@ def fed_broadcast(update, context):
 	chat = update.effective_chat  # type: Optional[Chat]
 	args = context.args
 
+	fed_id = sql.get_fed_id(chat.id)
+	
 	if is_user_fed_owner(fed_id, user.id) == False:
 	       update.effective_message.reply_text("Only Federation owners can do this!")
 	       return
@@ -1785,6 +1787,7 @@ You can even designate admin federations, so your trusted admin can ban all the 
  × /fdemote <user>: Drops the User from the admin Federation to a normal User. Fed owner only.
  × /fban <user>: Prohibits users from all federations where this chat takes place, and executors have control over.
  × /unfban <user>: Cancel User from all federations where this chat takes place, and that the executor has control over.
+ × /fbroadcast <message>: It broadcast the message in all the connected chats. [To be used in A Group]
  × /setfrules: Arrange Federation rules.
  × /frules: See Federation regulations.
  × /chatfed: See the Federation in the current chat.
