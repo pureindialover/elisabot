@@ -87,8 +87,8 @@ def filters(update, context):
 
 	conn = connected(context.bot, update, chat, user.id)
 	if user_can_changeinfo(chat, user, context.bot.id) is False:
-    	msg.reply_text("You don't have enough rights to add a filter!")
-    	return ""
+    	    msg.reply_text("You don't have enough rights to add a filter!")
+    	    return ""
 	
 	if not conn == False:
 		chat_id = conn
@@ -185,8 +185,8 @@ def stop_filter(update, context):
 
 	conn = connected(context.bot, update, chat, user.id)
 	if user_can_changeinfo(chat, user, context.bot.id) is False:
-    	message.reply_text("You don't have enough rights to remove a filter!")
-    	return ""
+    	    message.reply_text("You don't have enough rights to remove a filter!")
+    	    return ""
 	
 	if not conn == False:
 		chat_id = conn
