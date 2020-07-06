@@ -10,6 +10,7 @@ from telegram.utils.helpers import mention_html, escape_markdown
 from elisa import dispatcher, LOGGER
 from elisa.modules.disable import DisableAbleCommandHandler
 from elisa.modules.helper_funcs.chat_status import user_admin
+from elisa.modules.helper_funcs.admin_rights import user_can_changeinfo
 from elisa.modules.helper_funcs.extraction import extract_text
 from elisa.modules.helper_funcs.filters import CustomFilters
 from elisa.modules.helper_funcs.misc import build_keyboard_parser
@@ -85,6 +86,10 @@ def filters(update, context):
 	args = msg.text.split(None, 1)  # use python's maxsplit to separate Cmd, keyword, and reply_text
 
 	conn = connected(context.bot, update, chat, user.id)
+	if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	msg.reply_text("You don't have enough rights to add a filter!")
+    	return ""
+	
 	if not conn == False:
 		chat_id = conn
 		chat_name = dispatcher.bot.getChat(conn).title
@@ -175,9 +180,14 @@ def filters(update, context):
 def stop_filter(update, context):
 	chat = update.effective_chat
 	user = update.effective_user
+	message = update.effective_message
 	args = update.effective_message.text.split(None, 1)
 
 	conn = connected(context.bot, update, chat, user.id)
+	if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	message.reply_text("You don't have enough rights to remove a filter!")
+    	return ""
+	
 	if not conn == False:
 		chat_id = conn
 		chat_name = dispatcher.bot.getChat(conn).title
