@@ -10,6 +10,7 @@ import elisa.modules.sql.blacklist_sql as sql
 from elisa import dispatcher, LOGGER
 from elisa.modules.disable import DisableAbleCommandHandler
 from elisa.modules.helper_funcs.chat_status import user_admin, user_not_admin
+from elisa.modules.helper_funcs.admin_rights import user_can_changeinfo
 from elisa.modules.helper_funcs.extraction import extract_text
 from elisa.modules.helper_funcs.misc import split_message
 from elisa.modules.log_channel import loggable
@@ -72,6 +73,10 @@ def add_blacklist(update, context):
 	user = update.effective_user
 	words = msg.text.split(None, 1)
 
+	if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	    msg.reply_text("You don't have enough rights to blacklist a word!\nPerhaps__ I wish i can blacklist you.")
+    	    return ""
+	
 	conn = connected(context.bot, update, chat, user.id)
 	if conn:
 		chat_id = conn
@@ -109,6 +114,10 @@ def unblacklist(update, context):
 	user = update.effective_user
 	words = msg.text.split(None, 1)
 
+	if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	    msg.reply_text("You don't have enough rights to remove blacklist!\nPerhaps__ I wish i can blacklist you.")
+    	    return ""
+	
 	conn = connected(context.bot, update, chat, user.id)
 	if conn:
 		chat_id = conn
@@ -163,6 +172,10 @@ def blacklist_mode(update, context):
 	msg = update.effective_message
 	args = context.args
 
+	if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	    msg.reply_text("You don't have enough rights to set blacklist mode!\nPerhaps__ I wish i can blacklist you.")
+    	    return ""
+	
 	conn = connected(context.bot, update, chat, user.id, need_admin=True)
 	if conn:
 		chat = dispatcher.bot.getChat(conn)
