@@ -8,6 +8,7 @@ from telegram.utils.helpers import mention_html
 
 from elisa import dispatcher
 from elisa.modules.helper_funcs.chat_status import is_user_admin, user_admin
+from elisa.modules.helper_funcs.admin_rights import user_can_changeinfo
 from elisa.modules.helper_funcs.string_handling import extract_time
 from elisa.modules.log_channel import loggable
 from elisa.modules.sql import antiflood_sql as sql
@@ -89,6 +90,10 @@ def set_flood(update, context) -> str:
     message = update.effective_message  # type: Optional[Message]
     args = context.args
 
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	 message.reply_text("You don't have enough rights to set flood!")
+    	 return ""
+    
     conn = connected(context.bot, update, chat, user.id, need_admin=True)
     if conn:
         chat_id = conn
@@ -190,6 +195,10 @@ def set_flood_mode(update, context):
     msg = update.effective_message  # type: Optional[Message]
     args = context.args
 
+    if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	 msg.reply_text("You don't have enough rights to set flood mode!")
+    	 return ""
+    
     conn = connected(context.bot, update, chat, user.id, need_admin=True)
     if conn:
         chat = dispatcher.bot.getChat(conn)
