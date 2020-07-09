@@ -8,6 +8,7 @@ from telegram.utils.helpers import escape_markdown
 from elisa import dispatcher
 from elisa.modules.helper_funcs.handlers import CMD_STARTERS
 from elisa.modules.helper_funcs.misc import is_module_loaded
+from elisa.modules.helper_funcs.admin_rights import user_can_changeinfo
 from elisa.modules.helper_funcs.alternate import send_message, typing_action
 from elisa.modules.connection import connected
 
@@ -86,11 +87,17 @@ if is_module_loaded(FILENAME):
     @user_admin
     @typing_action
     def disable(update, context):
-        chat = update.effective_chat  # type: Optional[Chat]
+        message = update.effective_message
+        chat = update.effective_chat
         user = update.effective_user
         args = context.args
 
+        if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	    message.reply_text("You don't have enough rights to disable a command!")
+    	    return ""
+        
         conn = connected(context.bot, update, chat, user.id, need_admin=True)
+        
         if conn:
             chat = dispatcher.bot.getChat(conn)
             chat_name = dispatcher.bot.getChat(conn).title
@@ -126,9 +133,14 @@ if is_module_loaded(FILENAME):
     @user_admin
     @typing_action
     def enable(update, context):
-        chat = update.effective_chat  # type: Optional[Chat]
+        message = update.effective_message
+        chat = update.effective_chat
         user = update.effective_user
         args = context.args
+
+        if user_can_changeinfo(chat, user, context.bot.id) is False:
+    	    message.reply_text("You don't have enough rights to enable a command!")
+    	    return ""
 
         conn = connected(context.bot, update, chat, user.id, need_admin=True)
         if conn:
