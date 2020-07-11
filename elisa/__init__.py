@@ -23,9 +23,10 @@ ENV = bool(os.environ.get('ENV', False))
 if ENV:
     TOKEN = os.environ.get('TOKEN', None)
     try:
-        OWNER_ID = set(int(x) for x in os.environ.get("OWNER_ID", "").split())
+        OWNER_ID = int(os.environ.get("OWNER_ID", None))
     except ValueError:
         raise Exception("Your OWNER_ID env variable is not a valid integer.")
+
 
     MESSAGE_DUMP = os.environ.get('MESSAGE_DUMP', None)
     OWNER_USERNAME = os.environ.get("OWNER_USERNAME", None)
@@ -82,10 +83,10 @@ else:
     from elisa.config import Development as Config
     TOKEN = Config.API_KEY
     try:
-        OWNER_ID = set(int(x) for x in Config.OWNER_ID or [])
+        OWNER_ID = int(Config.OWNER_ID)
     except ValueError:
-        raise Exception("Your owners list does not contain valid integers.")
-
+        raise Exception("Your OWNER_ID variable is not a valid integer.")
+        
     MESSAGE_DUMP = Config.MESSAGE_DUMP
     
     try:
@@ -137,6 +138,7 @@ else:
     TELETHON_ID = Config.TELETHON_ID
     SPAMWATCH = Config.SPAMWATCH_API
 
+SUDO_USERS.add(OWNER_ID)
 # Telethon
 api_id = TELETHON_ID
 api_hash = TELETHON_HASH
