@@ -136,7 +136,7 @@ else:
     TELETHON_HASH = Config.TELETHON_HASH
     TELETHON_ID = Config.TELETHON_ID
     SPAMWATCH = Config.SPAMWATCH_API
-SUDO_USERS.add(OWNER_ID)
+
 # Telethon
 api_id = TELETHON_ID
 api_hash = TELETHON_HASH
