@@ -23,7 +23,7 @@ ENV = bool(os.environ.get('ENV', False))
 if ENV:
     TOKEN = os.environ.get('TOKEN', None)
     try:
-        OWNER_ID = int(os.environ.get("OWNER_ID", None))
+        OWNER_ID = set(int(x) for x in os.environ.get("OWNER_ID", "").split())
     except ValueError:
         raise Exception("Your OWNER_ID env variable is not a valid integer.")
 
@@ -34,6 +34,11 @@ if ENV:
         SUDO_USERS = set(int(x) for x in os.environ.get("SUDO_USERS", "").split())
     except ValueError:
         raise Exception("Your sudo users list does not contain valid integers.")
+        
+    try:
+        SPCL_USERS = set(int(x) for x in os.environ.get("SPCL_USERS", "").split())
+    except ValueError:
+        raise Exception("Your spcl users list does not contain valid integers.") 
 
     try:
         SUPPORT_USERS = set(int(x) for x in os.environ.get("SUPPORT_USERS", "").split())
@@ -74,16 +79,15 @@ if ENV:
     SPAMWATCH = os.environ.get('SPAMWATCH_API', None)
 
 else:
-    from skylee.config import Development as Config
+    from elisa.config import Development as Config
     TOKEN = Config.API_KEY
     try:
-        OWNER_ID = int(Config.OWNER_ID)
+        OWNER_ID = set(int(x) for x in Config.OWNER_ID or [])
     except ValueError:
-        raise Exception("Your OWNER_ID variable is not a valid integer.")
+        raise Exception("Your owners list does not contain valid integers.")
 
     MESSAGE_DUMP = Config.MESSAGE_DUMP
-    OWNER_USERNAME = Config.OWNER_USERNAME
-
+    
     try:
         SUDO_USERS = set(int(x) for x in Config.SUDO_USERS or [])
     except ValueError:
@@ -94,6 +98,11 @@ else:
     except ValueError:
         raise Exception("Your support users list does not contain valid integers.")
 
+    try:
+        SPCL_USERS = set(int(x) for x in Config.SPCL_USERS or [])
+    except ValueError:
+        raise Exception("Your spcl users list does not contain valid integers.")
+    
     try:
         WHITELIST_USERS = set(int(x) for x in Config.WHITELIST_USERS or [])
     except ValueError:
