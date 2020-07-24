@@ -14,7 +14,7 @@
       "description": "Setting this to ANYTHING will enable env variables. But, you need to understand the code to know what to set here!",
       "value": "ANYTHING"
     },
-    "API_KEY": {
+    "TOKEN": {
       "description": "Your bot token, as a string.",
       "value": ""
     },
@@ -24,16 +24,34 @@
     },
     "URL": {
       "description": "The Heroku App URL similar to https://<appname>.herokuapp.com/",
-      "value": ""
+      "value": "https://sedlyfyar.herokuapp.com/"
     },
     "MESSAGE_DUMP": {
       "description": "optional: a chat where your replied saved messages are stored, to stop people deleting their old",
       "value": "",
       "required": false
     },
+    "TL_HASH": {
+      "description": "optional: a chat where your replied saved messages are stored, to stop people deleting their old",
+      "value": "575ae63609c5076cfd2d2cb05c81987f",
+      "required": false
+    },
+    "TL_APP_ID": {
+      "description": "optional: a chat where your replied saved messages are stored, to stop people deleting their old",
+      "value": "1362016",
+      "required": false
+    },
     "PORT": {
       "description": "Port to use for your webhooks",
       "value": "8443"
+    },
+    "CUSTOM_CMD": {
+      "description": "Port to use for your webhooks",
+      "value": "!, /, |"
+    },
+    "OWNER_ID": {
+      "description": "Port to use for your webhooks",
+      "value": "953414679"
     },
     "ALLOW_EXCL": {
       "description": "Whether to allow using exclamation marks ! for commands as well as /.",
@@ -42,7 +60,7 @@
    },
   "addons": [
     {
-      "plan": "heroku-postgresql:standard-0",
+      "plan": "heroku-postgresql:premium-0",
       "options": {
         "version": "9.6"
       }
