@@ -14,6 +14,7 @@ from elisa import dispatcher, SUDO_USERS, LOGGER
 from elisa.modules.disable import DisableAbleCommandHandler
 from elisa.modules.helper_funcs.chat_status import can_delete, is_user_admin, user_not_admin, \
 	is_bot_admin, user_admin
+from elisa.modules.helper_funcs.admin_rights import user_can_changeinfo
 from elisa.modules.log_channel import loggable
 from elisa.modules.connection import connected
 
@@ -120,7 +121,12 @@ def lock(update, context) -> str:
 	args = context.args
 	chat = update.effective_chat
 	user = update.effective_user
+	msg = update.effective_message
 
+	if user_can_changeinfo(chat, user, context.bot.id) is False:
+            msg.reply_text("You are missing right to change group info!")
+            return
+	
 	if can_delete(chat, context.bot.id) or update.effective_message.chat.type == "private":
 		if len(args) >= 1:
 			ltype = args[0].lower()
@@ -196,6 +202,10 @@ def unlock(update, context) -> str:
 	chat = update.effective_chat
 	user = update.effective_user
 	message = update.effective_message
+
+	if user_can_changeinfo(chat, user, context.bot.id) is False:
+            message.reply_text("You are missing right to change group info!")
+            return
 	if is_user_admin(chat, message.from_user.id):
 		if len(args) >= 1:
 			ltype = args[0].lower()
