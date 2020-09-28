@@ -1,17 +1,22 @@
 from typing import Optional
 
-from telegram import Message, User
-from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+    ParseMode,
+    User,
+)
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, run_async, Filters
+from telegram.ext import CommandHandler, Filters, run_async
 from telegram.utils.helpers import escape_markdown
 
 import elisa.modules.sql.rules_sql as sql
 from elisa import dispatcher
-from elisa.modules.helper_funcs.chat_status import user_admin
 from elisa.modules.helper_funcs.admin_rights import user_can_changeinfo
-from elisa.modules.helper_funcs.string_handling import markdown_parser
 from elisa.modules.helper_funcs.alternate import typing_action
+from elisa.modules.helper_funcs.chat_status import user_admin
+from elisa.modules.helper_funcs.string_handling import markdown_parser
 
 
 @run_async
@@ -29,8 +34,11 @@ def send_rules(update, chat_id, from_pm=False):
         chat = bot.get_chat(chat_id)
     except BadRequest as excp:
         if excp.message == "Chat not found" and from_pm:
-            bot.send_message(user.id, "The rules shortcut for this chat hasn't been set properly! Ask admins to "
-                                      "fix this.")
+            bot.send_message(
+                user.id,
+                "The rules shortcut for this chat hasn't been set properly! Ask admins to "
+                "fix this.",
+            )
             return
         else:
             raise
@@ -41,17 +49,30 @@ def send_rules(update, chat_id, from_pm=False):
     if from_pm and rules:
         bot.send_message(user.id, text, parse_mode=ParseMode.MARKDOWN)
     elif from_pm:
-        bot.send_message(user.id, "The group admins haven't set any rules for this chat yet. "
-                                  "This probably doesn't mean it's lawless though...!")
+        bot.send_message(
+            user.id,
+            "The group admins haven't set any rules for this chat yet. "
+            "This probably doesn't mean it's lawless though...!",
+        )
     elif rules:
-        update.effective_message.reply_text("Contact me in PM to get this group's rules.",
-                                            reply_markup=InlineKeyboardMarkup(
-                                                [[InlineKeyboardButton(text="Rules",
-                                                                       url="t.me/{}?start={}".format(bot.username,
-                                                                                                     chat_id))]]))
+        update.effective_message.reply_text(
+            "Contact me in PM to get this group's rules.",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="Rules",
+                            url="t.me/{}?start={}".format(bot.username, chat_id),
+                        )
+                    ]
+                ]
+            ),
+        )
     else:
-        update.effective_message.reply_text("The group admins haven't set any rules for this chat yet. "
-                                            "This probably doesn't mean it's lawless though...!")
+        update.effective_message.reply_text(
+            "The group admins haven't set any rules for this chat yet. "
+            "This probably doesn't mean it's lawless though...!"
+        )
 
 
 @run_async
@@ -65,12 +86,14 @@ def set_rules(update, context):
     user = update.effective_user  # type: Optional[User]
     chat = update.effective_chat
     if user_can_changeinfo(chat, user, context.bot.id) is False:
-    	msg.reply_text("You don't have enough rights to set rules!")
-    	return ""
+        msg.reply_text("You don't have enough rights to set rules!")
+        return ""
     if len(args) == 2:
         txt = args[1]
         offset = len(txt) - len(raw_text)  # set correct offset relative to command
-        markdown_rules = markdown_parser(txt, entities=msg.parse_entities(), offset=offset)
+        markdown_rules = markdown_parser(
+            txt, entities=msg.parse_entities(), offset=offset
+        )
 
         sql.set_rules(chat_id, markdown_rules)
         update.effective_message.reply_text("Successfully set rules for this group.")
@@ -84,8 +107,8 @@ def clear_rules(update, context):
     user = update.effective_user  # type: Optional[User]
     chat = update.effective_chat
     if user_can_changeinfo(chat, user, context.bot.id) is False:
-    	msg.reply_text("You don't have enough rights to clear rules!")
-    	return ""
+        msg.reply_text("You don't have enough rights to clear rules!")
+        return ""
     chat_id = update.effective_chat.id
     sql.set_rules(chat_id, "")
     update.effective_message.reply_text("Successfully cleared rules!")
@@ -97,7 +120,7 @@ def __stats__():
 
 def __import_data__(chat_id, data):
     # set chat rules
-    rules = data.get('info', {}).get('rules', "")
+    rules = data.get("info", {}).get("rules", "")
     sql.set_rules(chat_id, rules)
 
 

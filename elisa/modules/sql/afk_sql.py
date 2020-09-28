@@ -1,6 +1,6 @@
 import threading
 
-from sqlalchemy import Column, UnicodeText, Boolean, Integer
+from sqlalchemy import Boolean, Column, Integer, UnicodeText
 
 from elisa.modules.sql import BASE, SESSION
 
@@ -77,4 +77,3 @@ def __load_afk_users():
 
 
 __load_afk_users()
-

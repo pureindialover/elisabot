@@ -2,7 +2,7 @@ import threading
 
 from sqlalchemy import Column, Integer, UnicodeText
 
-from elisa.modules.sql import SESSION, BASE
+from elisa.modules.sql import BASE, SESSION
 
 
 class UserInfo(BASE):

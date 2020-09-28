@@ -1,8 +1,8 @@
 import threading
 
-from sqlalchemy import Column, String, UnicodeText, func, distinct
+from sqlalchemy import Column, String, UnicodeText, distinct, func
 
-from elisa.modules.sql import SESSION, BASE
+from elisa.modules.sql import BASE, SESSION
 
 
 class Disable(BASE):

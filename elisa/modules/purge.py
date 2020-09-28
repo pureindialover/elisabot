@@ -1,9 +1,11 @@
-from elisa import client, SUDO_USERS
-
 import asyncio
+
 from telethon import events
-from telethon.tl.types import ChannelParticipantsAdmins
 from telethon.errors.rpcerrorlist import MessageDeleteForbiddenError
+from telethon.tl.types import ChannelParticipantsAdmins
+
+from elisa import SUDO_USERS, client
+
 
 # Check if user has admin rights
 async def is_administrator(user_id: int, message):

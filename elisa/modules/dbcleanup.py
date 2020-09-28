@@ -1,13 +1,12 @@
 from time import sleep
 
-from telegram import Bot, Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.error import BadRequest, Unauthorized
-from telegram.ext import CommandHandler, CallbackQueryHandler, run_async, Filters
+from telegram.ext import CallbackQueryHandler, CommandHandler, Filters, run_async
 
 import elisa.modules.sql.global_bans_sql as gban_sql
 import elisa.modules.sql.users_sql as user_sql
-from elisa import dispatcher, SUDO_USERS, OWNER_ID
-
+from elisa import OWNER_ID, dispatcher
 
 
 def get_invalid_chats(bot: Bot, update: Update, remove: bool = False):
