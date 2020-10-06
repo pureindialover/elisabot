@@ -214,7 +214,70 @@ def getprofile(update, context):
         context.bot.sendChatAction(chat.id, "typing")
         msg.reply_text(text, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 
-        
+@run_async
+def gbaninfo(update, context):
+    args = context.args
+    msg = update.effective_message  # type: Optional[Message]
+    user_id = extract_user(update.effective_message, args)
+    chat = update.effective_chat
+    
+    if user_id:
+        user = context.bot.get_chat(user_id)
+
+    elif not msg.reply_to_message and not args:
+        user = msg.from_user
+
+    elif not msg.reply_to_message and (
+        not args
+        or (
+            len(args) >= 1
+            and not args[0].startswith("@")
+            and not args[0].isdigit()
+            and not msg.parse_entities([MessageEntity.TEXT_MENTION])
+        )
+    ):
+        msg.reply_text("I can't extract a user from this.")
+        return
+
+    else:
+        return
+    
+    if user.id == OWNER_ID:
+        text = "Aye this guy is my owner.\nI would never do anything against him!"
+
+    elif user.id in SUDO_USERS:
+        text = (
+            "This person is one of my sudo users! "
+            "Nearly as powerful as my owner - so watch it."
+        )
+
+    elif user.id in SUPPORT_USERS:
+        text = (
+            "This person is one of my support users! "
+            "Not quite a sudo user, but can still gban you off the map."
+        )
+
+    elif user.id in WHITELIST_USERS:
+        text = (
+            "This person has been whitelisted! "
+            "That means I'm not allowed to ban/kick them."
+        )
+
+    
+    for mod in USER_INFO:
+        try:
+            mod_info = mod.__user_info__(user.id).strip()
+        except TypeError:
+            mod_info = mod.__user_info__(user.id, chat.id).strip()
+        if mod_info:
+            text = mod_info
+    
+    try:
+        context.bot.sendChatAction(chat.id, "typing")
+        msg.reply_text(text, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+    except:
+        return    
+    
 @run_async
 @typing_action
 def echo(update, context):
@@ -430,6 +493,7 @@ __mod_name__ = "Miscs"
 
 ID_HANDLER = DisableAbleCommandHandler("id", get_id, pass_args=True)
 INFO_HANDLER = DisableAbleCommandHandler("info", info, pass_args=True)
+GBANINFO_HANDLER = DisableAbleCommandHandler("gbaninfo", gbaninfo, pass_args=True)
 PROFILE_HANDLER = DisableAbleCommandHandler("getprofile", getprofile, pass_args=True)
 ECHO_HANDLER = CommandHandler("echo", echo, filters=CustomFilters.sudo_filter)
 MD_HELP_HANDLER = CommandHandler("markdownhelp", markdown_help, filters=Filters.private)
@@ -444,6 +508,7 @@ REDDIT_MEMES_HANDLER = DisableAbleCommandHandler("rmeme", rmemes)
 dispatcher.add_handler(ID_HANDLER)
 dispatcher.add_handler(INFO_HANDLER)
 dispatcher.add_handler(ECHO_HANDLER)
+dispatcher.add_handler(GBANINFO_HANDLER)
 dispatcher.add_handler(MD_HELP_HANDLER)
 dispatcher.add_handler(STATS_HANDLER)
 dispatcher.add_handler(PROFILE_HANDLER)
