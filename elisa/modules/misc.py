@@ -181,6 +181,28 @@ def getprofile(update, context):
     user_id = extract_user(update.effective_message, args)
     chat = update.effective_chat
     text = "He dosent have a profile pic"
+    
+    if user_id:
+        user = context.bot.get_chat(user_id)
+
+    elif not msg.reply_to_message and not args:
+        user = msg.from_user
+
+    elif not msg.reply_to_message and (
+        not args
+        or (
+            len(args) >= 1
+            and not args[0].startswith("@")
+            and not args[0].isdigit()
+            and not msg.parse_entities([MessageEntity.TEXT_MENTION])
+        )
+    ):
+        msg.reply_text("I can't extract a user from this.")
+        return
+
+    else:
+        return
+    
     try:
         profile = context.bot.get_user_profile_photos(user.id).photos[0][-1]
         context.bot.sendChatAction(chat.id, "upload_photo")
