@@ -244,16 +244,16 @@ def gbaninfo(update, context):
         return
 
     
-    is_gbanned = sql.is_user_gbanned(user_id)
+    is_gbanned = sql.is_user_gbanned(user)
     text = "<b>Globally banned</b>: {}"
     
-    if int(user_id) in OWNER_ID:
+    if int(user) in OWNER_ID:
         text = text.format("Aye this guy is my owner.\nI would never do anything against him!")
-    if int(user_id) in SUDO_USERS + SUPPORT_USERS:
+    if int(user) in SUDO_USERS + SUPPORT_USERS:
         text = text.format("Can Never Gban Them")
     if is_gbanned:
         text = text.format("Yes")
-        user = sql.get_gbanned_user(user_id)
+        user = sql.get_gbanned_user(user)
         if user.reason:
             text += "\nReason: {}".format(html.escape(user.reason))
             text += "\n\nAppeal at @elisaupdates if you think it's invalid."
