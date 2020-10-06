@@ -17,6 +17,7 @@ from elisa import (
 )
 from elisa.modules.helper_funcs.alternate import send_action, typing_action
 from elisa.modules.helper_funcs.chat_status import is_user_admin
+from elisa.__main__ import USER_INFO
 from elisa.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from elisa.modules.helper_funcs.filters import CustomFilters
 from elisa.modules.sql.users_sql import get_all_chats
@@ -373,7 +374,49 @@ def __user_info__(user_id):
 def __migrate__(old_chat_id, new_chat_id):
     sql.migrate_chat(old_chat_id, new_chat_id)
 
+@run_async
+def gbaninfo(update, context):
+    args = context.args
+    msg = update.effective_message  # type: Optional[Message]
+    user_id = extract_user(update.effective_message, args)
+    chat = update.effective_chat
+    
+    if user_id:
+        user = context.bot.get_chat(user_id)
 
+    elif not msg.reply_to_message and not args:
+        user = msg.from_user
+
+    elif not msg.reply_to_message and (
+        not args
+        or (
+            len(args) >= 1
+            and not args[0].startswith("@")
+            and not args[0].isdigit()
+            and not msg.parse_entities([MessageEntity.TEXT_MENTION])
+        )
+    ):
+        msg.reply_text("I can't extract a user from this.")
+        return
+
+    else:
+        return
+    
+    for mod in USER_INFO:
+        try:
+            mod_info = mod.__user_info__(user.id).strip()
+        except TypeError:
+            mod_info = mod.__user_info__(user.id, chat.id).strip()
+        if mod_info:
+            text = mod_info
+    
+    try:
+        context.bot.sendChatAction(chat.id, "typing")
+        msg.reply_text(text, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+    except:
+        return
+        
+        
 GBAN_HANDLER = CommandHandler(
     "gban",
     gban,
