@@ -375,12 +375,7 @@ def __user_info__(user_id):
 def __migrate__(old_chat_id, new_chat_id):
     sql.migrate_chat(old_chat_id, new_chat_id)
         
-__help__ = """
-Global Ban Information
- × /gbaninfo: Get the global ban status of user
-"""
-
-__mod_name__ = "GlobanBans"        
+  
         
 GBAN_HANDLER = CommandHandler(
     "gban",
