@@ -175,6 +175,25 @@ def info(update, context):
 
 
 @run_async
+def getprofile(update, context):
+    args = context.args
+    msg = update.effective_message  # type: Optional[Message]
+    user_id = extract_user(update.effective_message, args)
+    chat = update.effective_chat
+    text = "He dosent have a profile pic"
+    try:
+        profile = context.bot.get_user_profile_photos(user.id).photos[0][-1]
+        context.bot.sendChatAction(chat.id, "upload_photo")
+        context.bot.send_photo(
+            chat.id,
+            photo=profile
+        )
+    except IndexError:
+        context.bot.sendChatAction(chat.id, "typing")
+        msg.reply_text(text, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+
+        
+@run_async
 @typing_action
 def echo(update, context):
     args = update.effective_message.text.split(None, 1)
@@ -388,6 +407,7 @@ __mod_name__ = "Miscs"
 
 ID_HANDLER = DisableAbleCommandHandler("id", get_id, pass_args=True)
 INFO_HANDLER = DisableAbleCommandHandler("info", info, pass_args=True)
+PROFILE_HANDLER = DisableAbleCommandHandler("getprofile", getprofile, pass_args=True)
 ECHO_HANDLER = CommandHandler("echo", echo, filters=CustomFilters.sudo_filter)
 MD_HELP_HANDLER = CommandHandler("markdownhelp", markdown_help, filters=Filters.private)
 STATS_HANDLER = CommandHandler("stats", stats, filters=CustomFilters.sudo_filter)
@@ -403,6 +423,7 @@ dispatcher.add_handler(INFO_HANDLER)
 dispatcher.add_handler(ECHO_HANDLER)
 dispatcher.add_handler(MD_HELP_HANDLER)
 dispatcher.add_handler(STATS_HANDLER)
+dispatcher.add_handler(PROFILE_HANDLER)
 dispatcher.add_handler(GDPR_HANDLER)
 dispatcher.add_handler(WIKI_HANDLER)
 dispatcher.add_handler(GETLINK_HANDLER)
