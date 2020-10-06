@@ -19,6 +19,7 @@ from telegram.error import BadRequest
 from telegram.ext import CommandHandler, Filters, run_async
 from telegram.utils.helpers import escape_markdown, mention_html
 
+import elisa.modules.sql.global_bans_sql as sql
 from elisa import OWNER_ID, SUDO_USERS, SUPPORT_USERS, WHITELIST_USERS, dispatcher
 from elisa.__main__ import GDPR, STATS, USER_INFO
 from elisa.modules.disable import DisableAbleCommandHandler
@@ -241,6 +242,24 @@ def gbaninfo(update, context):
 
     else:
         return
+
+    
+    is_gbanned = sql.is_user_gbanned(user_id)
+    text = "<b>Globally banned</b>: {}"
+    
+    if int(user_id) in OWNER_ID:
+        text = text.format("Aye this guy is my owner.\nI would never do anything against him!")
+    if int(user_id) in SUDO_USERS + SUPPORT_USERS:
+        text = text.format("Can Never Gban Them")
+    if is_gbanned:
+        text = text.format("Yes")
+        user = sql.get_gbanned_user(user_id)
+        if user.reason:
+            text += "\nReason: {}".format(html.escape(user.reason))
+            text += "\n\nAppeal at @elisaupdates if you think it's invalid."
+    else:
+        text = text.format("No")
+    return text
     
     if user.id == OWNER_ID:
         text = "Aye this guy is my owner.\nI would never do anything against him!"
@@ -262,16 +281,7 @@ def gbaninfo(update, context):
             "This person has been whitelisted! "
             "That means I'm not allowed to ban/kick them."
         )
-
-    
-    for mod in USER_INFO:
-        try:
-            mod_info = mod.__user_info__(user.id).strip()
-        except TypeError:
-            mod_info = mod.__user_info__(user.id, chat.id).strip()
-        if mod_info:
-            text = mod_info
-    
+        
     try:
         context.bot.sendChatAction(chat.id, "typing")
         msg.reply_text(text, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
