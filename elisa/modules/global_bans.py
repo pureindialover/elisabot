@@ -18,6 +18,7 @@ from elisa import (
 from elisa.modules.helper_funcs.alternate import send_action, typing_action
 from elisa.modules.helper_funcs.chat_status import is_user_admin
 from elisa.__main__ import USER_INFO
+from elisa.modules.disable import DisableAbleCommandHandler
 from elisa.modules.helper_funcs.extraction import extract_user, extract_user_and_text
 from elisa.modules.helper_funcs.filters import CustomFilters
 from elisa.modules.sql.users_sql import get_all_chats
@@ -402,6 +403,28 @@ def gbaninfo(update, context):
     else:
         return
     
+    if user.id == OWNER_ID:
+        text = "Aye this guy is my owner.\nI would never do anything against him!"
+
+    elif user.id in SUDO_USERS:
+        text = (
+            "This person is one of my sudo users! "
+            "Nearly as powerful as my owner - so watch it."
+        )
+
+    elif user.id in SUPPORT_USERS:
+        text = (
+            "This person is one of my support users! "
+            "Not quite a sudo user, but can still gban you off the map."
+        )
+
+    elif user.id in WHITELIST_USERS:
+        text = (
+            "This person has been whitelisted! "
+            "That means I'm not allowed to ban/kick them."
+        )
+
+    
     for mod in USER_INFO:
         try:
             mod_info = mod.__user_info__(user.id).strip()
@@ -416,6 +439,12 @@ def gbaninfo(update, context):
     except:
         return
         
+__help__ = """
+Global Ban Information
+ × /gbaninfo: Get the global ban status of user
+"""
+
+__mod_name__ = "GlobanBans"        
         
 GBAN_HANDLER = CommandHandler(
     "gban",
@@ -423,6 +452,7 @@ GBAN_HANDLER = CommandHandler(
     pass_args=True,
     filters=CustomFilters.sudo_filter | CustomFilters.support_filter,
 )
+GBANINFO_HANDLER = DisableAbleCommandHandler("gbaninfo", gbaninfo, pass_args=True)
 UNGBAN_HANDLER = CommandHandler(
     "ungban",
     ungban,
@@ -438,6 +468,7 @@ GBAN_LIST = CommandHandler(
 GBAN_ENFORCER = MessageHandler(Filters.all & Filters.group, enforce_gban)
 
 dispatcher.add_handler(GBAN_HANDLER)
+dispatcher.add_handler(GBANINFO_HANDLER)
 dispatcher.add_handler(UNGBAN_HANDLER)
 dispatcher.add_handler(GBAN_LIST)
 
