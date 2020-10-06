@@ -180,7 +180,7 @@ def getprofile(update, context):
     msg = update.effective_message  # type: Optional[Message]
     user_id = extract_user(update.effective_message, args)
     chat = update.effective_chat
-    text = "He dosent have a profile pic"
+    text = "This user dosent have a profile pic"
     
     if user_id:
         user = context.bot.get_chat(user_id)
