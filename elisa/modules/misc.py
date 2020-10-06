@@ -247,9 +247,9 @@ def gbaninfo(update, context):
     is_gbanned = sql.is_user_gbanned(user.id)
     text = "<b>Globally banned</b>: {}"
     
-    if int(user.id) in OWNER_ID:
+    if user.id in OWNER_ID:
         text = text.format("Aye this guy is my owner.\nI would never do anything against him!")
-    if int(user.id) in SUDO_USERS + SUPPORT_USERS:
+    if user.id in SUDO_USERS + SUPPORT_USERS:
         text = text.format("Can Never Gban Them")
     if is_gbanned:
         text = text.format("Yes")
