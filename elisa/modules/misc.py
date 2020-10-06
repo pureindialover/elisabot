@@ -418,6 +418,7 @@ An "odds and ends" module for small, simple commands which don't really fit anyw
 
  × /id: Get the current group id. If used by replying to a message, gets that user's id.
  × /info: Get information about a user.
+ × /getprofile: Get current profile of user.
  × /wiki : Search wikipedia articles.
  × /rmeme: Sends random meme scraped from reddit. 
  × /reverse : Reverse searches image or stickers on google.
