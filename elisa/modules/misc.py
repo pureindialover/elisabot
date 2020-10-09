@@ -230,7 +230,6 @@ def slist(update, context):
     args = context.args
     msg = update.effective_message
     msg.reply_text(f"My Sudo List:-\n{SUDO_USERS}")
-        return
 
 
 @run_async
