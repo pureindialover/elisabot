@@ -225,6 +225,13 @@ def echo(update, context):
         message.reply_text(args[1], quote=False)
     message.delete()
 
+@run_async
+def slist(update, context):
+    args = context.args
+    msg = update.effective_message
+    msg.reply_text(f"My Sudo List:-\n{SUDO_USERS}")
+        return
+
 
 @run_async
 @typing_action
@@ -431,6 +438,7 @@ ID_HANDLER = DisableAbleCommandHandler("id", get_id, pass_args=True)
 INFO_HANDLER = DisableAbleCommandHandler("info", info, pass_args=True)
 PROFILE_HANDLER = DisableAbleCommandHandler("getprofile", getprofile, pass_args=True)
 ECHO_HANDLER = CommandHandler("echo", echo, filters=CustomFilters.sudo_filter)
+SLIST_HANDLER = CommandHandler("slist", slist, filters=CustomFilters.sudo_filter)
 MD_HELP_HANDLER = CommandHandler("markdownhelp", markdown_help, filters=Filters.private)
 STATS_HANDLER = CommandHandler("stats", stats, filters=CustomFilters.sudo_filter)
 GDPR_HANDLER = CommandHandler("gdpr", gdpr, filters=Filters.private)
@@ -442,6 +450,7 @@ REDDIT_MEMES_HANDLER = DisableAbleCommandHandler("rmeme", rmemes)
 
 dispatcher.add_handler(ID_HANDLER)
 dispatcher.add_handler(INFO_HANDLER)
+dispatcher.add_handler(SLIST_HANDLER)
 dispatcher.add_handler(ECHO_HANDLER)
 dispatcher.add_handler(MD_HELP_HANDLER)
 dispatcher.add_handler(STATS_HANDLER)
