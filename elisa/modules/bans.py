@@ -34,6 +34,10 @@ def ban(update, context):
     message = update.effective_message  # type: Optional[Message]
     args = context.args
 
+    if user.id == 1087968824:
+        message.reply_text("Anonymous admins cant ban!")
+        return ""
+    
     if user_can_ban(chat, user, context.bot.id) is False:
         message.reply_text("You don't have enough rights to ban users!")
         return ""
