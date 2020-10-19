@@ -48,6 +48,10 @@ def mute(update, context):
     if user_id == context.bot.id:
         message.reply_text("Yeahh... I'm not muting myself!")
         return ""
+    
+    if user_id == int(777000):
+        message.reply_text("Its Telegram Official how can i mute it!")
+        return ""
 
     member = chat.get_member(int(user_id))
 
