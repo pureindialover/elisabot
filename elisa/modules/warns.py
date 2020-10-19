@@ -331,7 +331,6 @@ def remove_warns(update, context):
 
 
 @run_async
-@typing_action
 def warns(update, context):
     message = update.effective_message  # type: Optional[Message]
     chat = update.effective_chat  # type: Optional[Chat]
