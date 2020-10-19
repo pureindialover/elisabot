@@ -61,6 +61,10 @@ def ban(update, context):
     if user_id == context.bot.id:
         message.reply_text("I'm not gonna BAN myself, are you crazy or wot?")
         return ""
+    
+    if user_id == int(777000):
+        message.reply_text("Its Telegram Official how can i ban him!")
+        return ""
 
     log = (
         "<b>{}:</b>"
@@ -144,6 +148,10 @@ def temp_ban(update, context):
 
     if user_id == context.bot.id:
         message.reply_text("I'm not gonna BAN myself, are you crazy or wot?")
+        return ""
+    
+    if user_id == int(777000):
+        message.reply_text("Its Telegram Official how can i ban him!")
         return ""
 
     if not reason:
@@ -243,6 +251,10 @@ def kick(update, context):
     if user_id == context.bot.id:
         message.reply_text("Yeahhh I'm not gonna do that")
         return ""
+    
+    if user_id == int(777000):
+        message.reply_text("Its Telegram Official how can i ban him!")
+        return ""
 
     res = chat.unban_member(user_id)  # unban on current user = kick
     if res:
@@ -288,6 +300,10 @@ def banme(update, context):
     if is_user_admin(update.effective_chat, user_id):
         update.effective_message.reply_text("Yeahhh.. not gonna ban an admin.")
         return
+    
+    if user_id == int(777000):
+        update.effective_message.reply_text("I wish i could ban you!")
+        return ""
 
     res = update.effective_chat.kick_member(user_id)
     if res:
@@ -315,6 +331,10 @@ def kickme(update, context):
     if is_user_admin(update.effective_chat, user_id):
         update.effective_message.reply_text("Yeahhh.. not gonna kick an admin.")
         return
+    
+    if user_id == int(777000):
+        update.effective_message.reply_text("I wish i could kick you!")
+        return ""
 
     res = update.effective_chat.unban_member(user_id)  # unban on current user = kick
     if res:
