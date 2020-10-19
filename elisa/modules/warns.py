@@ -229,6 +229,21 @@ def reset_warns(update, context):
     user = update.effective_user  # type: Optional[User]
     args = context.args
     user_id = extract_user(message, args)
+    
+    if user_id == int(777000):
+        message.reply_text("Its Telegram Official how can i reset its warns!")
+        return ""
+    
+    if user_id == context.bot.id:
+        message.reply_text("How can i reset my warns!")
+        return ""
+    
+    member = chat.get_member(int(user_id))
+
+    if member:
+        if is_user_admin(chat, user_id, member=member):
+            message.reply_text("How can i reset admin's warns!")
+            return ""
 
     if user_id:
         sql.reset_warns(user_id, chat.id)
