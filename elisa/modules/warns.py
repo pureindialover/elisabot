@@ -288,6 +288,27 @@ def remove_warns(update, context):
     args = context.args
     user_id = extract_user(message, args)
 
+    if not user_id:
+        message.reply_text(
+            "You'll need to either give me a username to remove warn, or reply to someone to be remove his warn."
+        )
+        return ""
+    
+    if user_id == int(777000):
+        message.reply_text("Its Telegram Official how can i remove its warn!")
+        return ""
+    
+    if user_id == context.bot.id:
+        message.reply_text("How can i remove my warn!")
+        return ""
+    
+    member = chat.get_member(int(user_id))
+
+    if member:
+        if is_user_admin(chat, user_id, member=member):
+            message.reply_text("How can i remove admin's warn!")
+            return ""
+    
     if user_id:
         sql.remove_warn(user_id, chat.id)
         message.reply_text("Last warn has been removed!")
@@ -316,6 +337,26 @@ def warns(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     args = context.args
     user_id = extract_user(message, args) or update.effective_user.id
+    if not user_id:
+        message.reply_text(
+            "You'll need to either give me a username to check his warns, or reply to someone to be check his warns."
+        )
+        return ""
+    
+    if user_id == int(777000):
+        message.reply_text("Its Telegram Official he can't be warned!")
+        return ""
+    
+    if user_id == context.bot.id:
+        message.reply_text("How can i check my warns!")
+        return ""
+    
+    member = chat.get_member(int(user_id))
+
+    if member:
+        if is_user_admin(chat, user_id, member=member):
+            message.reply_text("Admins can't be warned!")
+            return ""
     result = sql.get_warns(user_id, chat.id)
     num = 1
     if result and result[0] != 0:
