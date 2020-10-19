@@ -10,7 +10,7 @@ from elisa import dispatcher
 from elisa.modules.connection import connected
 from elisa.modules.helper_funcs.admin_rights import user_can_changeinfo
 from elisa.modules.helper_funcs.alternate import send_message, typing_action
-from elisa.modules.helper_funcs.chat_status import is_user_admin, user_admin
+from elisa.modules.helper_funcs.chat_status import is_user_admin, user_admin, is_channel
 from elisa.modules.helper_funcs.string_handling import extract_time
 from elisa.modules.log_channel import loggable
 from elisa.modules.sql import antiflood_sql as sql
@@ -30,6 +30,10 @@ def check_flood(update, context) -> str:
 
     # ignore admins
     if is_user_admin(chat, user.id):
+        sql.update_flood(chat.id, None)
+        return ""
+    
+    if is_channel(chat, user.id):
         sql.update_flood(chat.id, None)
         return ""
 
