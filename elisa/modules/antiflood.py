@@ -32,6 +32,10 @@ def check_flood(update, context) -> str:
     if is_user_admin(chat, user.id):
         sql.update_flood(chat.id, None)
         return ""
+    
+    if user.id == int(777000):
+        sql.update_flood(chat.id, None)
+        return ""
 
     should_ban = sql.update_flood(chat.id, user.id)
     if not should_ban:
