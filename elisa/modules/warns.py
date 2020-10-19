@@ -234,6 +234,12 @@ def reset_warns(update, context):
     args = context.args
     user_id = extract_user(message, args)
     
+    if not user_id:
+        message.reply_text(
+            "You'll need to either give me a username to reset warns, or reply to someone to be reset his warns."
+        )
+        return ""
+    
     if user_id == int(777000):
         message.reply_text("Its Telegram Official how can i reset its warns!")
         return ""
