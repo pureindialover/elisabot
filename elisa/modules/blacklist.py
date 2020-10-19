@@ -364,6 +364,9 @@ def del_blacklist(update, context):
     if not to_match:
         return
 
+    if user.id == int(777000):
+        return ""
+
     getmode, value = sql.get_blacklist_setting(chat.id)
 
     chat_filters = sql.get_chat_blacklist(chat.id)
