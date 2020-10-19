@@ -55,6 +55,10 @@ def warn(
     if is_user_admin(chat, user.id):
         message.reply_text("Damn admins, can't even be warned!")
         return ""
+    
+    if user.id == int(777000):
+        message.reply_text("Its Telegram Official how can i warn him!")
+        return ""
 
     if warner:
         warner_tag = mention_html(warner.id, warner.first_name)
