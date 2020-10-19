@@ -12,6 +12,7 @@ from elisa.modules.helper_funcs.alternate import typing_action
 from elisa.modules.helper_funcs.chat_status import (
     bot_admin,
     can_restrict,
+    is_channel,
     is_user_admin,
     is_user_ban_protected,
     is_user_in_chat,
@@ -287,6 +288,10 @@ def banme(update, context):
     user = update.effective_user
     if is_user_admin(update.effective_chat, user_id):
         update.effective_message.reply_text("Yeahhh.. not gonna ban an admin.")
+        return
+    
+    if is_channel(update.effective_chat, user_id):
+        update.effective_message.reply_text("Yeahhh.. not gonna ban channel.")
         return
 
     res = update.effective_chat.kick_member(user_id)
