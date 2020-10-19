@@ -13,7 +13,6 @@ from elisa.modules.helper_funcs.alternate import typing_action
 from elisa.modules.helper_funcs.chat_status import (
     bot_admin,
     can_restrict,
-    is_channel,
     is_user_admin,
     user_admin,
 )
@@ -55,9 +54,6 @@ def mute(update, context):
     if member:
         if is_user_admin(chat, user_id, member=member):
             message.reply_text("Well i'm not gonna stop an admin from talking!")
-        
-        if is_channel(chat, user_id, member=member):
-            message.reply_text("Well i'm not gonna stop an channel from talking!")
 
         elif member.can_send_messages is None or member.can_send_messages:
             context.bot.restrict_chat_member(
