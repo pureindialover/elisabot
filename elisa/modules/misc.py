@@ -227,9 +227,16 @@ def echo(update, context):
 
 @run_async
 def slist(update, context):
-    args = context.args
-    msg = update.effective_message
-    msg.reply_text(f"My Sudo List:-\n{SUDO_USERS}")
+    reply = "<b>Sudo Users❤:</b>\n"
+    for each_user in SUDO_USERS:
+        user_id = int(each_user)
+        try:
+            user = bot.get_chat(user_id)
+            first_name = user.first_name
+            reply += """• <a href="tg://user?id={}">{}</a>\n""".format(user_id, first_name)
+        except TelegramError:
+            pass
+    update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
 
 
 @run_async
