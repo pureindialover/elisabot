@@ -379,6 +379,10 @@ def unlock(update, context) -> str:
 def del_lockables(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     message = update.effective_message  # type: Optional[Message]
+    user = update.effective_user
+
+    if user.id == int(777000):
+        return ""
 
     for lockable, filter in LOCK_TYPES.items():
         if lockable == "rtl":
