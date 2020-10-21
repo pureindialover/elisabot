@@ -231,7 +231,7 @@ def slist(update, context):
     for each_user in SUDO_USERS:
         user_id = int(each_user)
         try:
-            user = bot.get_chat(user_id)
+            user = context.bot.get_chat(user_id)
             first_name = user.first_name
             reply += """• <a href="tg://user?id={}">{}</a>\n""".format(user_id, first_name)
         except TelegramError:
