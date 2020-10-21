@@ -5,7 +5,7 @@ from elisa import OWNER_ID
 
 def user_can_promote(chat: Chat, user: User, bot_id: int) -> bool:
     if (
-        user.id in OWNER_ID
+        user.id in int(OWNER_ID)
     ):
         return True
     return chat.get_member(user.id).can_promote_members
