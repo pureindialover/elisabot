@@ -3,7 +3,7 @@ import os
 
 from telegram import ParseMode
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, Filters
+from telegram.ext import CommandHandler, Filters, MessageHandler
 from telegram.ext.dispatcher import run_async
 from telegram.utils.helpers import mention_html
 
@@ -670,9 +670,9 @@ PERMANENT_PIN_SET_HANDLER = CommandHandler(
     pass_args=True,
     filters=Filters.group,
 )
-PERMANENT_PIN_HANDLER = CommandHandler(
+PERMANENT_PIN_HANDLER = MessageHandler(
     Filters.status_update.pinned_message | Filters.user(777000),
-    permanent_pin,
+    permanent_pin
 )
 UNPIN_HANDLER = CommandHandler("unpin", unpin, filters=Filters.group)
 
