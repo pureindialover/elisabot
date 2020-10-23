@@ -82,9 +82,9 @@ def add_column(engine, table_name, column):
     engine.execute('ALTER TABLE %s ADD COLUMN %s %s' % (table_name, column_name, column_type))
 
 column = Column('warn_mode', Integer, default=1)
-add_column(engine, warn_settings, column)
+add_column(engine, 'warn_settings', column)
 column = Column('warn_time', UnicodeText, default="0")
-add_column(engine, warn_settings, column)
+add_column(engine, 'warn_settings', column)
 
 
 WARN_INSERTION_LOCK = threading.RLock()
