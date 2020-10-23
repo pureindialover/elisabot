@@ -30,6 +30,17 @@ from elisa.modules.helper_funcs.misc import build_keyboard_alternate
 from elisa.modules.sql import permapin_sql as sql
 from elisa.modules.log_channel import loggable
 
+ENUM_FUNC_MAP = {
+	'Types.TEXT': dispatcher.bot.send_message,
+	'Types.BUTTON_TEXT': dispatcher.bot.send_message,
+	'Types.STICKER': dispatcher.bot.send_sticker,
+	'Types.DOCUMENT': dispatcher.bot.send_document,
+	'Types.PHOTO': dispatcher.bot.send_photo,
+	'Types.AUDIO': dispatcher.bot.send_audio,
+	'Types.VOICE': dispatcher.bot.send_voice,
+	'Types.VIDEO': dispatcher.bot.send_video
+}
+
 
 @run_async
 @bot_admin
