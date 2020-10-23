@@ -4,7 +4,9 @@ from sqlalchemy import Boolean, Column, Integer, String, UnicodeText, distinct, 
 from sqlalchemy.dialects import postgresql
 
 from elisa.modules.sql import BASE, SESSION
-from . import DB_URL
+import os
+
+DB_URI = os.environ.get("DATABASE_URL")
 
 engine = create_engine(DB_URI, client_encoding="utf8")
 
