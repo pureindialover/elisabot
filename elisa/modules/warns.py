@@ -249,22 +249,32 @@ def warn_user(update, context):
     args = context.args
     user_id, reason = extract_user_and_text(message, args)
 
-    if user_id:
-        if (
-            message.reply_to_message
-            and message.reply_to_message.from_user.id == user_id
-        ):
-            return warn(
-                message.reply_to_message.from_user,
-                chat,
-                reason,
-                message.reply_to_message,
-                warner,
-            )
+    
+    member = chat.get_member(int(user_id))
+
+    if member.status != "kicked" and member.status != "left":
+        if user_id:
+            if (
+                message.reply_to_message
+                and message.reply_to_message.from_user.id == user_id
+            ):
+                return warn(
+                    message.reply_to_message.from_user,
+                    chat,
+                    reason,
+                    message.reply_to_message,
+                    warner,
+                )
+            else:
+                return warn(chat.get_member(user_id).user, chat, reason, message, warner)
         else:
-            return warn(chat.get_member(user_id).user, chat, reason, message, warner)
+            message.reply_text("No user was designated!")
+            return ""
     else:
-        message.reply_text("No user was designated!")
+        message.reply_text(
+            "This user isn't even in the chat, warning them won't make them realise their mistake"
+        )
+
     return ""
 
 
