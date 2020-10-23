@@ -24,7 +24,7 @@
     },
     "URL": {
       "description": "The Heroku App URL similar to https://<appname>.herokuapp.com/",
-      "value": "https://sedlyfyar.herokuapp.com/"
+      "value": ""
     },
     "MESSAGE_DUMP": {
       "description": "optional: a chat where your replied saved messages are stored, to stop people deleting their old",
@@ -47,7 +47,7 @@
     },
     "CUSTOM_CMD": {
       "description": "Port to use for your webhooks",
-      "value": "!, /, |"
+      "value": "!, /"
     },
     "OWNER_ID": {
       "description": "Port to use for your webhooks",
@@ -60,7 +60,7 @@
    },
   "addons": [
     {
-      "plan": "heroku-postgresql:premium-0",
+      "plan": "heroku-postgresql,
       "options": {
         "version": "9.6"
       }
