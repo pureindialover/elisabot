@@ -204,128 +204,144 @@ def pin(update, context):
 
     return ""
 
-@can_pin
-@user_admin
 @run_async
-def permanent_pin_set(update, context) -> str:
-    user = update.effective_user
-    chat = update.effective_chat
-    args = context.args
-    bot = context.bot
-
-    conn = connected(bot, update, chat, user.id, need_admin=True)
-    
-    if user_can_pin(chat, user, context.bot.id) is False:
-        message.reply_text("You are missing rights to pin a message!")
-        return ""
-    
-    if conn:
-        chat = dispatcher.bot.getChat(conn)
-        chat_id = conn
-        dispatcher.bot.getChat(conn).title
-        if not args:
-            get_permapin = sql.get_permapin(chat_id)
-            text_maker = "Permanent pin is currently set:`{}`".format(
-                bool(int(get_permapin))
-            )
-            if get_permapin:
-                if chat.username:
-                    old_pin = "https://t.me/{}/{}".format(chat.username, get_permapin)
-                else:
-                    old_pin = "https://t.me/c/{}/{}".format(
-                        str(chat.id)[4:], get_permapin
-                    )
-                text_maker += "\nTo disable permanent pin: `/permanentpin off`"
-                text_maker += "\n\n[Permanent pin message is here]({})".format(old_pin)
-                update.effective_message.reply_text(text_maker, parse_mode="markdown")
-            return ""
-
-        prev_message = args[0]
-        if prev_message == "off":
-            sql.set_permapin(chat_id, 0)
-            update.effective_message.reply_text("Permanently pin has been disabled!")
-            return
-        if "/" in prev_message:
-            prev_message = prev_message.split("/")[-1]
-    else:
-        if update.effective_message.chat.type == "private":
-            update.effective_message.reply_text(
-                "You can do this command on groups, not on PM!!!"
-            )
-            return ""
-        chat = update.effective_chat
-        chat_id = update.effective_chat.id
-        update.effective_message.chat.title
-        if update.effective_message.reply_to_message:
-            prev_message = update.effective_message.reply_to_message.message_id
-        elif len(args) >= 1 and args[0] == "off":
-            sql.set_permapin(chat.id, 0)
-            update.effective_message.reply_text("Permanently pin has been disabled!")
-            return
-        else:
-            get_permapin = sql.get_permapin(chat.id)
-            text_maker = "Current permanent pin: `{}`".format(bool(int(get_permapin)))
-            if get_permapin:
-                if chat.username:
-                    old_pin = "https://t.me/{}/{}".format(chat.username, get_permapin)
-                else:
-                    old_pin = "https://t.me/c/{}/{}".format(
-                        str(chat.id)[4:], get_permapin
-                    )
-                text_maker += "\nTo disable permanent pin: `/permanentpin off`"
-                text_maker += "\n\n[Permanent pin message is here]({})".format(old_pin)
-            update.effective_message.reply_text(text_maker, parse_mode="markdown")
-            return ""
-
-    is_group = chat.type != "private" and chat.type != "channel"
-
-    if prev_message and is_group:
-        sql.set_permapin(chat.id, prev_message)
-        update.effective_message.reply_text("Permanent Pin Set successfully!")
-        return (
-            "<b>{}:</b>"
-            "\n#PERMANENT_PIN"
-            "\n<b>Admin:</b> {}".format(
-                html.escape(chat.title), mention_html(user.id, user.first_name)
-            )
-        )
-
-    return ""
-
 @can_pin
 @user_admin
+def permapin(update, context):
+	chat = update.effective_chat  # type: Optional[Chat]
+	user = update.effective_user  # type: Optional[User]
+	message = update.effective_message  # type: Optional[Message]
+	args = context.args
+
+	conn = connected(context.bot, update, chat, user.id, need_admin=False)
+	if conn:
+		chat = dispatcher.bot.getChat(conn)
+		chat_id = conn
+		chat_name = dispatcher.bot.getChat(conn).title
+	else:
+		if update.effective_message.chat.type == "private":
+			send_message(update.effective_message, "You can do this command in groups, not PM")
+			return ""
+		chat = update.effective_chat
+		chat_id = update.effective_chat.id
+		chat_name = update.effective_message.chat.title
+
+	text, data_type, content, buttons = get_message_type(message)
+	tombol = build_keyboard_alternate(buttons)
+	try:
+		message.delete()
+	except BadRequest:
+		pass
+	if str(data_type) in ('Types.BUTTON_TEXT', 'Types.TEXT'):
+		try:
+			sendingmsg = context.bot.send_message(chat_id, text, parse_mode="markdown",
+								 disable_web_page_preview=True, reply_markup=InlineKeyboardMarkup(tombol))
+		except BadRequest:
+			context.bot.send_message(chat_id, "Wrong markdown text!\nIf you don't know what markdown is, please type `/markdownhelp` in PM.", parse_mode="markdown")
+			return
+	else:
+		sendingmsg = ENUM_FUNC_MAP[str(data_type)](chat_id, content, caption=text, parse_mode="markdown", disable_web_page_preview=True, reply_markup=InlineKeyboardMarkup(tombol))
+	try:
+		context.bot.pinChatMessage(chat_id, sendingmsg.message_id)
+	except BadRequest:
+		send_message(update.effective_message, "I don't have access to pin message!")
+
+
+@run_async
+@can_pin
+@user_admin
+def permanent_pin_set(update, context):
+	user = update.effective_user  # type: Optional[User]
+	chat = update.effective_chat  # type: Optional[Chat]
+	args = context.args
+
+	conn = connected(context.bot, update, chat, user.id, need_admin=True)
+	if conn:
+		chat = dispatcher.bot.getChat(conn)
+		chat_id = conn
+		chat_name = dispatcher.bot.getChat(conn).title
+		if not args:
+			get_permapin = sql.get_permapin(chat_id)
+			text_maker = "Current permanent pin: `{}`".format(bool(int(get_permapin)))
+			if get_permapin:
+				if chat.username:
+					old_pin = "https://t.me/{}/{}".format(chat.username, get_permapin)
+				else:
+					old_pin = "https://t.me/c/{}/{}".format(str(chat.id)[4:], get_permapin)
+				text_maker += "\nTo disable permanent pin: `/permanentpin off`"
+				text_maker += "\n\n[Permanent pin message is here]({})".format(old_pin)
+			send_message(update.effective_message, text_maker, parse_mode="markdown")
+			return ""
+		prev_message = args[0]
+		if prev_message == "off":
+			sql.set_permapin(chat_id, 0)
+			send_message(update.effective_message, "Permanent pin has been disabled!")
+			return
+		if "/" in prev_message:
+			prev_message = prev_message.split("/")[-1]
+	else:
+		if update.effective_message.chat.type == "private":
+			send_message(update.effective_message, "You can do this command in groups, not PM")
+			return ""
+		chat = update.effective_chat
+		chat_id = update.effective_chat.id
+		chat_name = update.effective_message.chat.title
+		if update.effective_message.reply_to_message:
+			prev_message = update.effective_message.reply_to_message.message_id
+		elif len(args) >= 1 and args[0] == "off":
+			sql.set_permapin(chat.id, 0)
+			send_message(update.effective_message, "Permanent pin has been disabled!")
+			return
+		else:
+			get_permapin = sql.get_permapin(chat_id)
+			text_maker = tl(update.effective_message, "Successfully set permanent pin: `{}`").format(bool(int(get_permapin)))
+			if get_permapin:
+				if chat.username:
+					old_pin = "https://t.me/{}/{}".format(chat.username, get_permapin)
+				else:
+					old_pin = "https://t.me/c/{}/{}".format(str(chat.id)[4:], get_permapin)
+				text_maker += "\nTo disable permanent pin: `/permanentpin off`"
+				text_maker += "\n\n[Permanent pin message is here]({})".format(old_pin)
+			send_message(update.effective_message, text_maker, parse_mode="markdown")
+			return ""
+
+	is_group = chat.type != "private" and chat.type != "channel"
+
+	if prev_message and is_group:
+		sql.set_permapin(chat.id, prev_message)
+		send_message(update.effective_message, "Successfully set permanent pin!")
+		return "<b>{}:</b>" \
+			   "\n#PERMANENT_PIN" \
+			   "\n<b>Admin:</b> {}".format(html.escape(chat.title), mention_html(user.id, user.first_name))
+
+	return ""
+
+
 @run_async
 def permanent_pin(update, context):
-    user = update.effective_user
-    chat = update.effective_chat
-    message = update.effective_message
-    bot = context.bot
+	user = update.effective_user  # type: Optional[User]
+	chat = update.effective_chat  # type: Optional[Chat]
+	message = update.effective_message
+	args = context.args
 
-    get_permapin = sql.get_permapin(chat.id)
-    if get_permapin and not user.id == bot.id:
-        try:
-            to_del = bot.pinChatMessage(
-                chat.id, get_permapin, disable_notification=True
-            )
-        except BadRequest:
-            sql.set_permapin(chat.id, 0)
-            if chat.username:
-                old_pin = "https://t.me/{}/{}".format(chat.username, get_permapin)
-            else:
-                old_pin = "https://t.me/c/{}/{}".format(str(chat.id)[4:], get_permapin)
-            message.reply_text(
-                "*Permanent pin error:*\nI can't pin messages here!\nMake sure I'm admin and can pin messages.\n\nPermanent pin disabled now, [here is your old pinned message]({})".format(
-                    old_pin
-                ),
-                parse_mode="markdown",
-            )
-            return
+	get_permapin = sql.get_permapin(chat.id)
+	if get_permapin and not user.id == context.bot.id:
+		try:
+			to_del = context.bot.pinChatMessage(chat.id, get_permapin, disable_notification=True)
+		except BadRequest:
+			sql.set_permapin(chat.id, 0)
+			if chat.username:
+				old_pin = "https://t.me/{}/{}".format(chat.username, get_permapin)
+			else:
+				old_pin = "https://t.me/c/{}/{}".format(str(chat.id)[4:], get_permapin)
+			send_message(update.effective_message, "*Permanent pin error:*\nI can't pin messages here!\nMake sure I'm admin and can pin messages.\n\nPermanent pin disabled now, [here is your old pinned message]({})".format(old_pin), parse_mode="markdown")
+			return
 
-        if to_del:
-            try:
-                bot.deleteMessage(chat.id, message.message_id + 1)
-            except BadRequest:
-                print("Permanent pin error: cannot delete pin msg")
+		if to_del:
+			try:
+				context.bot.deleteMessage(chat.id, message.message_id+1)
+			except BadRequest:
+				print("Permanent pin error: cannot delete pin msg")
 
 
 @run_async
@@ -643,7 +659,8 @@ done easily using the bot.
 
 *Admin only:*
  × /pin: Silently pins the message replied to - add `loud`, `notify` or `violent` to give notificaton to users.
- × /permanentpin: Set a permanent pin for supergroup chat, when an admin or telegram channel change pinned message, bot will change pinned message immediatelly. You can turn off permapin by `/permapin off`
+ × /permapin <text>: Pin a custom messages via bots. This message can contain markdown, and can be used in replies to the media include additional buttons and text.
+ × /permanentpin: Set a permanent pin for supergroup chat, when an admin or telegram channel change pinned message, bot will change pinned message immediatelly
  × /unpin: Unpins the currently pinned message.
  × /invitelink: Gets private chat's invitelink.
  × /promote: Promotes the user replied to.
@@ -664,16 +681,9 @@ An example of promoting someone to admins:
 __mod_name__ = "Admin"
 
 PIN_HANDLER = CommandHandler("pin", pin, pass_args=True, filters=Filters.group)
-PERMANENT_PIN_SET_HANDLER = CommandHandler(
-    "permanentpin",
-    permanent_pin_set,
-    pass_args=True,
-    filters=Filters.group,
-)
-PERMANENT_PIN_HANDLER = MessageHandler(
-    Filters.status_update.pinned_message | Filters.user(777000),
-    permanent_pin
-)
+PERMAPIN_HANDLER = CommandHandler("permapin", permapin, filters=Filters.group)
+PERMANENT_PIN_SET_HANDLER = CommandHandler("permanentpin", permanent_pin_set, pass_args=True, filters=Filters.group)
+PERMANENT_PIN_HANDLER = MessageHandler(Filters.status_update.pinned_message | Filters.user(777000), permanent_pin)
 UNPIN_HANDLER = CommandHandler("unpin", unpin, filters=Filters.group)
 
 INVITE_HANDLER = CommandHandler("invitelink", invite)
@@ -696,6 +706,7 @@ ADMINLIST_HANDLER = DisableAbleCommandHandler(
 )
 
 dispatcher.add_handler(PIN_HANDLER)
+dispatcher.add_handler(PERMAPIN_HANDLER)
 dispatcher.add_handler(PERMANENT_PIN_SET_HANDLER)
 dispatcher.add_handler(PERMANENT_PIN_HANDLER)
 dispatcher.add_handler(UNPIN_HANDLER)
