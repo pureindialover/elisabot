@@ -1,7 +1,7 @@
 import html
 import os
 
-from telegram import ParseMode
+from telegram import ParseMode, InlineKeyboardMarkup
 from telegram.error import BadRequest
 from telegram.ext import CommandHandler, Filters, MessageHandler
 from telegram.ext.dispatcher import run_async
