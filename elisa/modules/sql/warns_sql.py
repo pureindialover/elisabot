@@ -71,6 +71,12 @@ Warns.__table__.create(checkfirst=True)
 WarnFilters.__table__.create(checkfirst=True)
 WarnSettings.__table__.create(checkfirst=True)
 
+col = Column('warn_mode', Integer, default=1)
+col.create(WarnSettings, checkfirst=True)
+
+col1 = Column('warn_time', UnicodeText, default="0")
+col1.create(WarnSettings, checkfirst=True)
+
 WARN_INSERTION_LOCK = threading.RLock()
 WARN_FILTER_INSERTION_LOCK = threading.RLock()
 WARN_SETTINGS_LOCK = threading.RLock()
