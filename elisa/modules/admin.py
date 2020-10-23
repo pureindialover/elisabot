@@ -283,7 +283,7 @@ def permanent_pin_set(update, context):
 			prev_message = prev_message.split("/")[-1]
 	else:
 		if update.effective_message.chat.type == "private":
-			reply_text.update.effective_message("You can do this command in groups, not PM")
+			update.effective_message.reply_text("You can do this command in groups, not PM")
 			return ""
 		chat = update.effective_chat
 		chat_id = update.effective_chat.id
@@ -292,11 +292,11 @@ def permanent_pin_set(update, context):
 			prev_message = update.effective_message.reply_to_message.message_id
 		elif len(args) >= 1 and args[0] == "off":
 			sql.set_permapin(chat.id, 0)
-			reply_text.update.effective_message("Permanent pin has been disabled!")
+			update.effective_message.reply_text("Permanent pin has been disabled!")
 			return
 		else:
 			get_permapin = sql.get_permapin(chat_id)
-			text_maker = reply_text.update.effective_message("Successfully set permanent pin: `{}`").format(bool(int(get_permapin)))
+			text_maker = update.effective_message.reply_text("Successfully set permanent pin: `{}`").format(bool(int(get_permapin)))
 			if get_permapin:
 				if chat.username:
 					old_pin = "https://t.me/{}/{}".format(chat.username, get_permapin)
