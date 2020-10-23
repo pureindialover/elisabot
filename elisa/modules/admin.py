@@ -204,7 +204,10 @@ def pin(update, context):
 
     return ""
 
+@run_async
+@bot_admin
 @can_pin
+@loggable
 @user_admin
 def permanent_pin_set(update, context) -> str:
     user = update.effective_user
@@ -291,7 +294,7 @@ def permanent_pin_set(update, context) -> str:
 
     return ""
 
-
+@run_async
 def permanent_pin(update, context):
     user = update.effective_user
     chat = update.effective_chat
@@ -666,12 +669,10 @@ PERMANENT_PIN_SET_HANDLER = CommandHandler(
     permanent_pin_set,
     pass_args=True,
     filters=Filters.group,
-    run_async=True,
 )
 PERMANENT_PIN_HANDLER = MessageHandler(
     Filters.status_update.pinned_message | Filters.user(777000),
     permanent_pin,
-    run_async=True,
 )
 UNPIN_HANDLER = CommandHandler("unpin", unpin, filters=Filters.group)
 
