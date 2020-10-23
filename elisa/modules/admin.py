@@ -296,7 +296,7 @@ def permanent_pin_set(update, context):
 			return
 		else:
 			get_permapin = sql.get_permapin(chat_id)
-			text_maker = tl(update.effective_message, "Successfully set permanent pin: `{}`").format(bool(int(get_permapin)))
+			text_maker = send_message(update.effective_message, "Successfully set permanent pin: `{}`").format(bool(int(get_permapin)))
 			if get_permapin:
 				if chat.username:
 					old_pin = "https://t.me/{}/{}".format(chat.username, get_permapin)
