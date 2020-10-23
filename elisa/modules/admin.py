@@ -670,7 +670,7 @@ PERMANENT_PIN_SET_HANDLER = CommandHandler(
     pass_args=True,
     filters=Filters.group,
 )
-PERMANENT_PIN_HANDLER = MessageHandler(
+PERMANENT_PIN_HANDLER = CommandHandler(
     Filters.status_update.pinned_message | Filters.user(777000),
     permanent_pin,
 )
