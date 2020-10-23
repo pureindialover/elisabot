@@ -1,9 +1,12 @@
 import threading
 
-from sqlalchemy import Boolean, Column, Integer, String, UnicodeText, distinct, func
+from sqlalchemy import Boolean, Column, Integer, String, UnicodeText, distinct, func, create_engine
 from sqlalchemy.dialects import postgresql
 
 from elisa.modules.sql import BASE, SESSION
+from elisa import DB_URL
+
+engine = create_engine(DB_URI, client_encoding="utf8")
 
 
 class Warns(BASE):
@@ -71,11 +74,16 @@ Warns.__table__.create(checkfirst=True)
 WarnFilters.__table__.create(checkfirst=True)
 WarnSettings.__table__.create(checkfirst=True)
 
-col = Column('warn_mode', Integer, default=1)
-col.create(WarnSettings, checkfirst=True)
+def add_column(engine, table_name, column):
+    column_name = column.compile(dialect=engine.dialect)
+    column_type = column.type.compile(engine.dialect)
+    engine.execute('ALTER TABLE %s ADD COLUMN %s %s' % (table_name, column_name, column_type))
 
-col1 = Column('warn_time', UnicodeText, default="0")
-col1.create(WarnSettings, checkfirst=True)
+column = Column('warn_mode', Integer, default=1)
+add_column(engine, warn_settings, column)
+column = Column('warn_time', UnicodeText, default="0")
+add_column(engine, warn_settings, column)
+
 
 WARN_INSERTION_LOCK = threading.RLock()
 WARN_FILTER_INSERTION_LOCK = threading.RLock()
