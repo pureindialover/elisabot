@@ -10,6 +10,7 @@ from telegram import (
     Message,
     ParseMode,
     User,
+    ChatPermissions,
 )
 from telegram.error import BadRequest
 from telegram.ext import (
@@ -87,13 +88,13 @@ def warn(
                 reply = "{} warnings, {} has been kicked!".format(limit, mention_html(user.id, user.first_name))
             
             elif warn_mode == 3:
-                message.bot.restrict_chat_member(chat.id, user.id, can_send_messages=False)
+                message.bot.restrict_chat_member(chat.id, user.id, permissions=ChatPermissions(can_send_messages=False))
                 reply = "{} warnings, {} has been muted!".format(limit, mention_html(user.id, user.first_name))
             
             elif warn_mode == 4:
                 warn_time = sql.get_warn_time(chat.id)
                 mutetime = extract_time(message, warn_time)
-                message.bot.restrict_chat_member(chat.id, user.id, until_date=mutetime, can_send_messages=False)
+                message.bot.restrict_chat_member(chat.id, user.id, until_date=mutetime, permissions=ChatPermissions(can_send_messages=False))
                 reply = "{} warnings, {} has been temporarily muted for {}!".format(limit, mention_html(user.id, 
                                                                                     user.first_name), 
                                                                                     warn_time)
