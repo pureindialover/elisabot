@@ -40,7 +40,7 @@ from elisa.modules.helper_funcs.extraction import (
 )
 from elisa.modules.helper_funcs.filters import CustomFilters
 from elisa.modules.helper_funcs.misc import split_message
-from elisa.modules.helper_funcs.string_handling import split_quotes
+from elisa.modules.helper_funcs.string_handling import split_quotes, extract_time
 from elisa.modules.log_channel import loggable
 from elisa.modules.sql import warns_sql as sql
 
