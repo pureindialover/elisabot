@@ -353,7 +353,7 @@ def permanent_pin(update, context):
             else:
                 old_pin = "https://t.me/c/{}/{}".format(str(chat.id)[4:], get_permapin)
             message.reply_text(
-                "*Permanent pin error:*\nI can't pin messages here!\nMake sure I'm admin and can pin messages.\n\nPermanent pin disabled now, [here is your old pinned message]({})".format(
+                "*Permanent pin error:*\nI can't pin messages here!\nMake sure I'm admin and can pin messages.\nMake sure message isn't deleted.\n\nPermanent pin disabled now, [here is your old pinned message]({})".format(
                     old_pin
                 ),
                 parse_mode="markdown",
