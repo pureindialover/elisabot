@@ -6,6 +6,9 @@ from sqlalchemy.dialects import postgresql
 from elisa.modules.sql import BASE, SESSION
 
 
+engine = create_engine(DB_URI, client_encoding="utf8")
+
+
 class Warns(BASE):
     __tablename__ = "warns"
 
