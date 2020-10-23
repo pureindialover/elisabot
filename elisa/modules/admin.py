@@ -16,7 +16,7 @@ from elisa.modules.helper_funcs.admin_rights import (
     user_can_pin,
     user_can_promote,
 )
-from elisa.modules.helper_funcs.alternate import typing_action
+from elisa.modules.helper_funcs.alternate import send_message, typing_action
 from elisa.modules.helper_funcs.chat_status import (
     bot_admin,
     can_invite,
