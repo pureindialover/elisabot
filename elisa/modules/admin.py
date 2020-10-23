@@ -204,11 +204,9 @@ def pin(update, context):
 
     return ""
 
-@run_async
-@bot_admin
 @can_pin
-@loggable
 @user_admin
+@run_async
 def permanent_pin_set(update, context) -> str:
     user = update.effective_user
     chat = update.effective_chat
@@ -294,6 +292,8 @@ def permanent_pin_set(update, context) -> str:
 
     return ""
 
+@can_pin
+@user_admin
 @run_async
 def permanent_pin(update, context):
     user = update.effective_user
