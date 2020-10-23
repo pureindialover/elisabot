@@ -25,6 +25,8 @@ from elisa.modules.helper_funcs.chat_status import (
     user_admin,
 )
 from elisa.modules.helper_funcs.extraction import extract_user, extract_user_and_text
+from elisa.modules.helper_funcs.msg_types import get_message_type
+from elisa.modules.helper_funcs.misc import build_keyboard_alternate
 from elisa.modules.sql import permapin_sql as sql
 from elisa.modules.log_channel import loggable
 
