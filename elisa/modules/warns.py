@@ -113,7 +113,6 @@ def warn(
             reply += "\n {}. {}".format(num, html.escape(warn_reason))
             num += 1
 
-        message.bot.send_sticker(chat.id, BAN_STICKER)  # banhammer natalie sticker
         
         log_reason = "<b>{}:</b>" \
                      "\n#WARN_ACTION" \
