@@ -371,11 +371,11 @@ def permanent_pin(update, context):
             )
             return
 
-        if to_del:
-            try:
-                bot.deleteMessage(chat.id, message.message_id + 1)
-            except BadRequest:
-                print("Permanent pin error: cannot delete pin msg")
+        #if to_del:
+        #    try:
+        #        bot.deleteMessage(chat.id, message.message_id + 1)
+        #    except BadRequest:
+        #        print("Permanent pin error: cannot delete pin msg")
 
 @run_async
 @bot_admin
