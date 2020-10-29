@@ -346,7 +346,7 @@ def list_notes(update, context):
     note_list = sql.get_all_chat_notes(chat_id)
     des = "You can get notes by using `/get notename`, or `#notename`.\n"
     for note in note_list:
-        note_name = "  `#{}`\n".format(note.name.lower())
+        note_name = " `#{}`\n".format(note.name.lower())
         if len(msg) + len(note_name) > MAX_MESSAGE_LENGTH:
             update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
             msg = ""
@@ -356,10 +356,14 @@ def list_notes(update, context):
         update.effective_message.reply_text("No notes saved here!")
 
     elif len(msg) != 0:
-        update.effective_message.reply_text(
-            msg.format(chat_name) + des, parse_mode=ParseMode.MARKDOWN
-        )
-
+        try:
+            update.effective_message.reply_text(
+                msg.format(chat_name) + des, parse_mode=ParseMode.MARKDOWN
+            )
+        except ValueError:
+            update.effective_message.reply_text(
+                "There was a problem in showing notes list, maybe due to some invalid character in note names. Ask in @elisasupport if you're unable to figure it out!"
+            )
 
 @run_async
 @user_admin
