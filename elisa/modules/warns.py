@@ -65,49 +65,55 @@ def warn(
         warner_tag = mention_html(warner.id, warner.first_name)
     else:
         warner_tag = "Automated warn filter."
-    
-    keyboard = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("Remove warn (admin only)", callback_data="rm_warn({})".format(user.id))]])
 
     limit, soft_warn, warn_mode = sql.get_warn_setting(chat.id)
     num_warns, reasons = sql.warn_user(user.id, chat.id, reason)
     num = 1
     if num_warns >= limit:
         sql.reset_warns(user.id, chat.id)
-        if not soft_warn:
-            if not warn_mode:
+        if not warn_mode:
                 chat.kick_member(user.id)
-                reply = "{} warnings, {} has been banned!".format(limit, mention_html(user.id, user.first_name))
+                reply = "That's {} warnings, {} has been banned!".format(limit, mention_html(user.id, user.first_name))
             
             elif warn_mode == 1:
                 chat.kick_member(user.id)
-                reply = "{} warnings, {} has been banned!".format(limit, mention_html(user.id, user.first_name))
+                reply = "That's {} warnings, {} has been banned!".format(limit, mention_html(user.id, user.first_name))
             
             elif warn_mode == 2:
                 chat.unban_member(user.id)
-                reply = "{} warnings, {} has been kicked!".format(limit, mention_html(user.id, user.first_name))
+                reply = "That's {} warnings, {} has been kicked!".format(limit, mention_html(user.id, user.first_name))
             
             elif warn_mode == 3:
+<<<<<<< HEAD
                 message.bot.restrict_chat_member(chat.id, user.id, permissions=ChatPermissions(can_send_messages=False))
                 reply = "{} warnings, {} has been muted!".format(limit, mention_html(user.id, user.first_name))
+=======
+                message.bot.restrict_chat_member(chat.id, user.id, can_send_messages=False)
+                reply = "That's {} warnings, {} has been muted!".format(limit, mention_html(user.id, user.first_name))
+>>>>>>> parent of 300bdae... Update warns.py
             
             elif warn_mode == 4:
                 warn_time = sql.get_warn_time(chat.id)
                 mutetime = extract_time(message, warn_time)
+<<<<<<< HEAD
                 message.bot.restrict_chat_member(chat.id, user.id, until_date=mutetime, permissions=ChatPermissions(can_send_messages=False))
                 reply = "{} warnings, {} has been temporarily muted for {}!".format(limit, mention_html(user.id, 
+=======
+                message.bot.restrict_chat_member(chat.id, user.id, until_date=mutetime, can_send_messages=False)
+                reply = "That's {} warnings, {} has been temporarily muted for {}!".format(limit, mention_html(user.id, 
+>>>>>>> parent of 300bdae... Update warns.py
                                                                                     user.first_name), 
                                                                                     warn_time)
             elif warn_mode == 5:
                 warn_time = sql.get_warn_time(chat.id)
                 tbantime = extract_time(message, warn_time)
                 chat.kick_member(user.id, until_date=tbantime)
-                reply = "{} warnings, {} has been temporarily banned for {}!".format(limit, mention_html(user.id, 
+                reply = "That's {} warnings, {} has been temporarily banned for {}!".format(limit, mention_html(user.id, 
                                                                                     user.first_name), 
                                                                                     warn_time)
         else:
             chat.kick_member(user.id)
-            reply = "{} warnings, {} has been banned!".format(limit, mention_html(user.id, user.first_name))
+            reply = "That's {} warnings, {} has been banned!".format(limit, mention_html(user.id, user.first_name))
             
         for warn_reason in reasons:
             reply += "\n {}. {}".format(num, html.escape(warn_reason))
@@ -194,7 +200,6 @@ def warn(
         else:
             raise
     return log_reason
-
 
 
 @run_async
