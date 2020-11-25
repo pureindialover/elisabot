@@ -634,7 +634,7 @@ def set_warn_strength(update, context):
 @run_async
 @user_admin
 @loggable
-def set_warn_mode(update, context):
+def set_warn_mode(update: Update, context: CallbackContext):
     chat = update.effective_chat  # type: Optional[Chat]
     user = update.effective_user  # type: Optional[User]
     msg = update.effective_message  # type: Optional[Message]
