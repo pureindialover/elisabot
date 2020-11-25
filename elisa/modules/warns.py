@@ -131,18 +131,9 @@ def warn(
 @bot_admin
 @loggable
 def button(update, context):
-    query = update.callback_query
-    message = update.effective_message # type: Optional[CallbackQuery]
+    query = update.callback_query # type: Optional[CallbackQuery]
     chat = update.effective_chat
     user = query.from_user
-    args = context.args
-    user_id = extract_user(message, args)
-    
-    member = chat.get_member(int(user_id))
-    
-    if is_user_admin(chat, user.id, member=member) is False:
-        query.answer("This button is only for admins.")
-        return ""
     
     if user_can_ban(chat, user, context.bot.id) is False:
         query.answer("You dont have enough rights.")
