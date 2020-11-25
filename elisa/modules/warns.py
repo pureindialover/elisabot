@@ -70,168 +70,58 @@ def warn(
     num_warns, reasons = sql.warn_user(user.id, chat.id, reason)
     if num_warns >= limit:
         sql.reset_warns(user.id, chat.id)
-<<<<<<< HEAD
-        if not warn_mode:
-                chat.kick_member(user.id)
-                reply = "That's {} warnings, {} has been banned!".format(limit, mention_html(user.id, user.first_name))
-            
-            elif warn_mode == 1:
-                chat.kick_member(user.id)
-                reply = "That's {} warnings, {} has been banned!".format(limit, mention_html(user.id, user.first_name))
-            
-            elif warn_mode == 2:
-                chat.unban_member(user.id)
-                reply = "That's {} warnings, {} has been kicked!".format(limit, mention_html(user.id, user.first_name))
-            
-            elif warn_mode == 3:
-<<<<<<< HEAD
-                message.bot.restrict_chat_member(chat.id, user.id, permissions=ChatPermissions(can_send_messages=False))
-                reply = "{} warnings, {} has been muted!".format(limit, mention_html(user.id, user.first_name))
-=======
-                message.bot.restrict_chat_member(chat.id, user.id, can_send_messages=False)
-                reply = "That's {} warnings, {} has been muted!".format(limit, mention_html(user.id, user.first_name))
->>>>>>> parent of 300bdae... Update warns.py
-            
-            elif warn_mode == 4:
-                warn_time = sql.get_warn_time(chat.id)
-                mutetime = extract_time(message, warn_time)
-<<<<<<< HEAD
-                message.bot.restrict_chat_member(chat.id, user.id, until_date=mutetime, permissions=ChatPermissions(can_send_messages=False))
-                reply = "{} warnings, {} has been temporarily muted for {}!".format(limit, mention_html(user.id, 
-=======
-                message.bot.restrict_chat_member(chat.id, user.id, until_date=mutetime, can_send_messages=False)
-                reply = "That's {} warnings, {} has been temporarily muted for {}!".format(limit, mention_html(user.id, 
->>>>>>> parent of 300bdae... Update warns.py
-                                                                                    user.first_name), 
-                                                                                    warn_time)
-            elif warn_mode == 5:
-                warn_time = sql.get_warn_time(chat.id)
-                tbantime = extract_time(message, warn_time)
-                chat.kick_member(user.id, until_date=tbantime)
-                reply = "That's {} warnings, {} has been temporarily banned for {}!".format(limit, mention_html(user.id, 
-                                                                                    user.first_name), 
-                                                                                    warn_time)
-        else:
-=======
         if soft_warn:  # kick
             chat.unban_member(user.id)
-            reply = "That's {} warnings, {} has been kicked!".format(
-                limit, mention_html(user.id, user.first_name)
-            )
+            reply = "That's {} warnings, {} has been kicked!".format(limit, mention_html(user.id, user.first_name))
 
         else:  # ban
->>>>>>> parent of c8d98e5... Update warns.py
             chat.kick_member(user.id)
-            reply = "That's{} warnings, {} has been banned!".format(
-                limit, mention_html(user.id, user.first_name)
-            )
+            reply = "That's{} warnings, {} has been banned!".format(limit, mention_html(user.id, user.first_name))
 
         for warn_reason in reasons:
-<<<<<<< HEAD
-            reply += "\n {}. {}".format(num, html.escape(warn_reason))
-            num += 1
-
-        
-        log_reason = "<b>{}:</b>" \
-                     "\n#WARN_ACTION" \
-                     "\n<b>• Admin:</b> {}" \
-                     "\n<b>• User:</b> {}" \
-                     "\n<b>• ID:</b> <code>{}</code>".format(html.escape(chat.title),
-                                                            warner_tag,
-                                                            mention_html(user.id, user.first_name), user.id)
-        if not warn_mode:
-            log_reason += "\n<b>• Action:</b> banned"
-        
-        elif warn_mode == 1:
-            log_reason += "\n<b>• Action:</b> banned"
-        
-        elif warn_mode == 2:
-            log_reason += "\n<b>• Action:</b> kicked"
-        
-        elif warn_mode == 3:
-            log_reason += "\n<b>• Action:</b> muted"
-        
-        elif warn_mode == 4:
-            log_reason += "\n<b>• Action:</b> tmuted" \
-                          "\n<b>• Time:</b> {}".format(warn_time)
-                           
-        elif warn_mode == 5:
-            log_reason += "\n<b>• Action:</b> tbanned" \
-                          "\n<b>• Time:</b> {}".format(warn_time)
-            
-        
-        log_reason += "\n<b>• Counts:</b> <code>{}/{}</code>".format(num_warns, limit)
-        
-        if reason:
-            log_reason += "\n<b>• Reason:</b> {}".format(reason)
-=======
             reply += "\n - {}".format(html.escape(warn_reason))
 
-        # message.bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
+        #message.bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
         keyboard = None
-        log_reason = (
-            "<b>{}:</b>"
-            "\n#WARN_BAN"
-            "\n<b>Admin:</b> {}"
-            "\n<b>User:</b> {} (<code>{}</code>)"
-            "\n<b>Reason:</b> {}"
-            "\n<b>Counts:</b> <code>{}/{}</code>".format(
-                html.escape(chat.title),
-                warner_tag,
-                mention_html(user.id, user.first_name),
-                user.id,
-                reason,
-                num_warns,
-                limit,
-            )
-        )
->>>>>>> parent of c8d98e5... Update warns.py
+        log_reason = "<b>{}:</b>" \
+                     "\n#WARN_BAN" \
+                     "\n<b>Admin:</b> {}" \
+                     "\n<b>User:</b> {} (<code>{}</code>)" \
+                     "\n<b>Reason:</b> {}"\
+                     "\n<b>Counts:</b> <code>{}/{}</code>".format(html.escape(chat.title),
+                                                                  warner_tag,
+                                                                  mention_html(user.id, user.first_name),
+                                                                  user.id, reason, num_warns, limit)
 
     else:
         keyboard = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "Remove warn ⚠️", callback_data="rm_warn({})".format(user.id)
-                    )
-                ]
-            ]
-        )
+            [[InlineKeyboardButton("Remove warn ⚠️", callback_data="rm_warn({})".format(user.id))]])
 
-        reply = "User {} has {}/{} warnings... watch out!".format(
-            mention_html(user.id, user.first_name), num_warns, limit
-        )
+        reply = "User {} has {}/{} warnings... watch out!".format(mention_html(user.id, user.first_name), num_warns,
+                                                             limit)
         if reason:
             reply += "\nReason for last warn:\n{}".format(html.escape(reason))
 
-        log_reason = (
-            "<b>{}:</b>"
-            "\n#WARN"
-            "\n<b>Admin:</b> {}"
-            "\n<b>User:</b> {} (<code>{}</code>)"
-            "\n<b>Reason:</b> {}"
-            "\n<b>Counts:</b> <code>{}/{}</code>".format(
-                html.escape(chat.title),
-                warner_tag,
-                mention_html(user.id, user.first_name),
-                user.id,
-                reason,
-                num_warns,
-                limit,
-            )
-        )
+        log_reason = "<b>{}:</b>" \
+                     "\n#WARN" \
+                     "\n<b>Admin:</b> {}" \
+                     "\n<b>User:</b> {} (<code>{}</code>)" \
+                     "\n<b>Reason:</b> {}"\
+                     "\n<b>Counts:</b> <code>{}/{}</code>".format(html.escape(chat.title),
+                                                                  warner_tag,
+                                                                  mention_html(user.id, user.first_name),
+                                                                  user.id, reason, num_warns, limit)
 
     try:
         message.reply_text(reply, reply_markup=keyboard, parse_mode=ParseMode.HTML)
     except BadRequest as excp:
         if excp.message == "Reply message not found":
             # Do not reply
-            message.reply_text(
-                reply, reply_markup=keyboard, parse_mode=ParseMode.HTML, quote=False
-            )
+            message.reply_text(reply, reply_markup=keyboard, parse_mode=ParseMode.HTML, quote=False)
         else:
             raise
     return log_reason
+
 
 
 @run_async
