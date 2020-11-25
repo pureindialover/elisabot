@@ -144,6 +144,11 @@ def button(update, context):
     if match:
         user_id = match.group(1)
         chat = update.effective_chat  # type: Optional[Chat]
+        
+        if not is_user_admin(chat, int(user.id)):
+            query.answer(text="You need to be an admin to do this.")
+            return ""
+        
         res = sql.remove_warn(user_id, chat.id)
         if res:
             update.effective_message.edit_text(
