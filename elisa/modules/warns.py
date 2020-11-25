@@ -824,7 +824,7 @@ WARN_LIMIT_HANDLER = CommandHandler(
 WARN_STRENGTH_HANDLER = CommandHandler(
     "strongwarn", set_warn_strength, pass_args=True, filters=Filters.group
 )
-WARN_MODE_HANDLER = CommandHandler(["warnmode", "setwarnmode"], set_warn_mode, filters=Filters.group)
+WARN_MODE_HANDLER = CustomCommandHandler(CMD_PREFIX, ["warnmode", "setwarnmode"], set_warn_mode, filters=Filters.group)
 
 
 dispatcher.add_handler(WARN_HANDLER)
