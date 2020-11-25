@@ -126,8 +126,6 @@ def warn(
 
 
 @run_async
-@user_admin_no_reply
-@can_restrict
 @bot_admin
 @loggable
 def button(update, context):
@@ -135,9 +133,6 @@ def button(update, context):
     chat = update.effective_chat
     user = query.from_user
     
-    if not is_user_admin(chat, int(user.id)):
-        query.answer("You need to be an admin to do this.")
-        return ""
     
     if user_can_ban(chat, user, context.bot.id) is False:
         query.answer("You dont have enough rights.")
