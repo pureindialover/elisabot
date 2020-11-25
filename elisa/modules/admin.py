@@ -226,8 +226,8 @@ def permapin(update, context):
 	args = context.args
 
 	if user_can_pin(chat, user, context.bot.id) is False:
-        message.reply_text("You are missing rights to pin a message!")
-        return ""
+            message.reply_text("You are missing rights to pin a message!")
+            return ""
 	
 	conn = connected(context.bot, update, chat, user.id, need_admin=False)
 	if conn:
