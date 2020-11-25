@@ -135,6 +135,10 @@ def button(update, context):
     chat = update.effective_chat
     user = query.from_user
     
+    if is_user_admin(chat, user.id) is False:
+        query.answer("This button is only for admins.")
+        return ""
+    
     if user_can_ban(chat, user, context.bot.id) is False:
         query.answer("You dont have enough rights.")
         return ""
