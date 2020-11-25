@@ -238,17 +238,6 @@ def get_warn_setting(chat_id):
     finally:
         SESSION.close()
 
-def set_warn_mode(chat_id, warn_mode):
-    with WARN_SETTINGS_LOCK:
-        curr_setting = SESSION.query(WarnSettings).get(str(chat_id))
-        if not curr_setting:
-            curr_setting = WarnSettings(chat_id, warn_mode=warn_mode)
-
-        curr_setting.warn_mode = warn_mode
-
-        SESSION.add(curr_setting)
-        SESSION.commit()        
-        
 def set_warn_time(chat_id, time_val):
     with WARN_SETTINGS_LOCK:
         warn_time = SESSION.query(WarnSettings).get(str(chat_id))
