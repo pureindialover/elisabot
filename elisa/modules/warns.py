@@ -138,7 +138,7 @@ def button(update, context):
             return ""
     
     if user_can_ban(chat, user, context.bot.id) is False:
-        query.answer("You dont have enough rights.")
+        query.answer(text="You dont have enough rights.")
         return ""
     
     user = update.effective_user  # type: Optional[User]
