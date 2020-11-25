@@ -187,6 +187,10 @@ def warn_user(update, context):
     args = context.args
     user_id, reason = extract_user_and_text(message, args)
     
+    if user_can_ban(chat, warner, context.bot.id) is False:
+        message.reply_text("You dont have enough rights to warn a user")
+        return ""
+    
     if user_id:
         member = chat.get_member(int(user_id))
         if member.status != "kicked" and member.status != "left":
@@ -223,6 +227,10 @@ def reset_warns(update, context):
     user = update.effective_user  # type: Optional[User]
     args = context.args
     user_id = extract_user(message, args)
+    
+    if user_can_ban(chat, user, context.bot.id) is False:
+        message.reply_text("You dont have enough rights to reset warns of user")
+        return ""
     
     if not user_id:
         message.reply_text(
@@ -278,6 +286,10 @@ def remove_warns(update, context):
     args = context.args
     user_id = extract_user(message, args)
 
+    if user_can_ban(chat, user, context.bot.id) is False:
+        message.reply_text("You dont have enough rights to remove warns of user")
+        return ""
+    
     if not user_id:
         message.reply_text(
             "You'll need to either give me a username to remove warn, or reply to someone to be remove his warn."
