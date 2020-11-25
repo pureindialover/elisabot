@@ -135,6 +135,10 @@ def button(update, context):
     chat = update.effective_chat
     user = query.from_user
     
+    if not is_user_admin(chat, int(user.id)):
+        query.answer("You need to be an admin to do this.")
+        return ""
+    
     if user_can_ban(chat, user, context.bot.id) is False:
         query.answer("You dont have enough rights.")
         return ""
@@ -144,10 +148,6 @@ def button(update, context):
     if match:
         user_id = match.group(1)
         chat = update.effective_chat  # type: Optional[Chat]
-        
-        if not is_user_admin(chat, int(user.id)):
-            query.answer(text="You need to be an admin to do this.")
-            return ""
         
         res = sql.remove_warn(user_id, chat.id)
         if res:
