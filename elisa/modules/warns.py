@@ -66,11 +66,11 @@ def warn(
     else:
         warner_tag = "Automated warn filter."
 
-    limit, soft_warn, warn_mode = sql.get_warn_setting(chat.id)
+    limit, soft_warn = sql.get_warn_setting(chat.id)
     num_warns, reasons = sql.warn_user(user.id, chat.id, reason)
-    num = 1
     if num_warns >= limit:
         sql.reset_warns(user.id, chat.id)
+<<<<<<< HEAD
         if not warn_mode:
                 chat.kick_member(user.id)
                 reply = "That's {} warnings, {} has been banned!".format(limit, mention_html(user.id, user.first_name))
@@ -112,10 +112,22 @@ def warn(
                                                                                     user.first_name), 
                                                                                     warn_time)
         else:
+=======
+        if soft_warn:  # kick
+            chat.unban_member(user.id)
+            reply = "That's {} warnings, {} has been kicked!".format(
+                limit, mention_html(user.id, user.first_name)
+            )
+
+        else:  # ban
+>>>>>>> parent of c8d98e5... Update warns.py
             chat.kick_member(user.id)
-            reply = "That's {} warnings, {} has been banned!".format(limit, mention_html(user.id, user.first_name))
-            
+            reply = "That's{} warnings, {} has been banned!".format(
+                limit, mention_html(user.id, user.first_name)
+            )
+
         for warn_reason in reasons:
+<<<<<<< HEAD
             reply += "\n {}. {}".format(num, html.escape(warn_reason))
             num += 1
 
@@ -152,51 +164,71 @@ def warn(
         
         if reason:
             log_reason += "\n<b>• Reason:</b> {}".format(reason)
+=======
+            reply += "\n - {}".format(html.escape(warn_reason))
+
+        # message.bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
+        keyboard = None
+        log_reason = (
+            "<b>{}:</b>"
+            "\n#WARN_BAN"
+            "\n<b>Admin:</b> {}"
+            "\n<b>User:</b> {} (<code>{}</code>)"
+            "\n<b>Reason:</b> {}"
+            "\n<b>Counts:</b> <code>{}/{}</code>".format(
+                html.escape(chat.title),
+                warner_tag,
+                mention_html(user.id, user.first_name),
+                user.id,
+                reason,
+                num_warns,
+                limit,
+            )
+        )
+>>>>>>> parent of c8d98e5... Update warns.py
 
     else:
         keyboard = InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Remove warn (admin only)", callback_data="rm_warn({})".format(user.id))]])
+            [
+                [
+                    InlineKeyboardButton(
+                        "Remove warn ⚠️", callback_data="rm_warn({})".format(user.id)
+                    )
+                ]
+            ]
+        )
 
-        if num_warns+1 == limit:
-            if not warn_mode:
-                action_mode = "banned"
-            elif warn_mode == 1:
-                action_mode = "banned"
-            elif warn_mode == 2:
-                action_mode = "kicked"
-            elif warn_mode == 3:
-                action_mode = "muted"
-            elif warn_mode == 4:
-                action_mode = "temporarily muted"
-            elif warn_mode == 5:
-                action_mode = "temporarily banned"
-            reply = "{} has {}/{} warnings... watch out, you'll be {} in the last warn!".format(mention_html(user.id, 
-                                                                                                 user.first_name), 
-                                                                                                num_warns, 
-                                                                                                limit, action_mode)
-        else:
-            reply = "{} has {}/{} warnings... watch out!".format(mention_html(user.id, user.first_name), num_warns, limit)
+        reply = "User {} has {}/{} warnings... watch out!".format(
+            mention_html(user.id, user.first_name), num_warns, limit
+        )
         if reason:
             reply += "\nReason for last warn:\n{}".format(html.escape(reason))
 
-        log_reason = "<b>{}:</b>" \
-                     "\n#WARN" \
-                     "\n<b>• Admin:</b> {}" \
-                     "\n<b>• User:</b> {}" \
-                     "\n<b>• ID:</b> <code>{}</code>" \
-                     "\n<b>• Counts:</b> <code>{}/{}</code>".format(html.escape(chat.title),
-                                                                    warner_tag,
-                                                                    mention_html(user.id, user.first_name), user.id, 
-                                                                    num_warns, limit)
-        if reason:
-                log_reason += "\n<b>• Reason:</b> {}".format(reason)
+        log_reason = (
+            "<b>{}:</b>"
+            "\n#WARN"
+            "\n<b>Admin:</b> {}"
+            "\n<b>User:</b> {} (<code>{}</code>)"
+            "\n<b>Reason:</b> {}"
+            "\n<b>Counts:</b> <code>{}/{}</code>".format(
+                html.escape(chat.title),
+                warner_tag,
+                mention_html(user.id, user.first_name),
+                user.id,
+                reason,
+                num_warns,
+                limit,
+            )
+        )
 
     try:
         message.reply_text(reply, reply_markup=keyboard, parse_mode=ParseMode.HTML)
     except BadRequest as excp:
         if excp.message == "Reply message not found":
             # Do not reply
-            message.reply_text(reply, reply_markup=keyboard, parse_mode=ParseMode.HTML, quote=False)
+            message.reply_text(
+                reply, reply_markup=keyboard, parse_mode=ParseMode.HTML, quote=False
+            )
         else:
             raise
     return log_reason
@@ -236,8 +268,8 @@ def button(update, context):
             )
         else:
             update.effective_message.edit_text(
-                "User {} has already has no warns.".format(mention_html(user.id, user.first_name)),
-                parse_mode=ParseMode.HTML)
+                "This user already has no warns.", parse_mode=ParseMode.HTML
+            )
 
     return ""
 
@@ -417,24 +449,27 @@ def warns(update, context):
     num = 1
     if result and result[0] != 0:
         num_warns, reasons = result
-        limit, soft_warn, warn_mode = sql.get_warn_setting(chat.id)
+        limit, soft_warn = sql.get_warn_setting(chat.id)
 
         if reasons:
-            text = "User {} has {}/{} warnings, for the following reasons:".format(mention_html(member.user.id, 
-                                                                                   member.user.first_name),
-                                                                                   num_warns, limit)
+            text = "This user has {}/{} warnings, for the following reasons:".format(
+                num_warns, limit
+            )
             for reason in reasons:
                 text += "\n {}. {}".format(num, reason)
                 num += 1
 
             msgs = split_message(text)
             for msg in msgs:
-                update.effective_message.reply_text(msg, parse_mode=ParseMode.HTML)
-
+                update.effective_message.reply_text(msg)
+        else:
+            update.effective_message.reply_text(
+                "User has {}/{} warnings, but no reasons for any of them.".format(
+                    num_warns, limit
+                )
+            )
     else:
-        update.effective_message.reply_text("User {} hasn't got any warnings!".format(mention_html(member.user.id, 
-                                                                                      member.user.first_name)),
-                                                                                      parse_mode=ParseMode.HTML)
+        update.effective_message.reply_text("This user hasn't got any warnings!")
 
 
 # Dispatcher handler stop - do not async
@@ -635,112 +670,6 @@ def set_warn_strength(update, context):
             )
     return ""
 
-@can_changeinfo
-@run_async
-@user_admin
-@loggable
-def set_warn_mode(update: Update, context: CallbackContext):
-    chat = update.effective_chat  # type: Optional[Chat]
-    user = update.effective_user  # type: Optional[User]
-    msg = update.effective_message  # type: Optional[Message]
-    args = msg.text.split(" ")
-
-    if len(args) > 1:
-        if args[1].lower() in ("ban"):
-            sql.set_warn_mode(chat.id, 1)
-            msg.reply_text("Updated warning mode to: ban")
-            
-            return "<b>{}:</b>\n" \
-                   "<b>• Admin:</b> {}\n" \
-                   "Has updated warn mode to ban.".format(html.escape(chat.title),
-                                                                            mention_html(user.id, user.first_name))
-
-        elif args[1].lower() in ("kick"):
-            sql.set_warn_mode(chat.id, 2)
-            msg.reply_text("Updated warning mode to: kick")
-            return "<b>{}:</b>\n" \
-                   "<b>• Admin:</b> {}\n" \
-                   "Has updated warn mode to kick.".format(html.escape(chat.title),
-                                                                                  mention_html(user.id,
-                                                                                               user.first_name))
-        
-        elif args[1].lower() in ("mute"):
-            sql.set_warn_mode(chat.id, 3)
-            msg.reply_text("Updated warning mode to: mute")
-            return "<b>{}:</b>\n" \
-                   "<b>• Admin:</b> {}\n" \
-                   "Has updated warn mode to mute.".format(html.escape(chat.title), mention_html(user.id,
-                                                                                               user.first_name))
-        
-        
-        elif args[1].lower() in ("tmute"):
-            try:
-                val = args[2].lower()
-                sql.set_warn_mode(chat.id, 4)
-                sql.set_warn_time(chat.id, str(val))
-                msg.reply_text("Updated warning mode to: tmute for {}".format(val))
-            
-                return "<b>{}:</b>\n" \
-                       "<b>• Admin:</b> {}\n" \
-                       "Has updated warn mode to tmute for {}.".format(html.escape(chat.title), mention_html(user.id,
-                                                                                                   user.first_name), val)
-            except:      
-            	msg.reply_text("You haven't specified a time!")
-            	return""
-        
-        elif args[1].lower() == "tban":
-            try:
-                val = args[2].lower()
-                sql.set_warn_mode(chat.id, 5)
-                sql.set_warn_time(chat.id, str(val))
-                msg.reply_text("Updated warning mode to: tban for {}".format(val))
-            
-                return "<b>{}:</b>\n" \
-                       "<b>• Admin:</b> {}\n" \
-                       "Has updated warn mode to tban for {}.".format(html.escape(chat.title), mention_html(user.id,
-                                                                                               user.first_name), val)
-                
-            except:      
-            	msg.reply_text("You haven't specified a time!")
-            	return""
-                
-        else:
-            msg.reply_text("Unknown Type command. I only understand ban/kick/mute/tmute/tban!")
-            
-    else:
-        limit, soft_warn, warn_mode = sql.get_warn_setting(chat.id)
-        warn_time = sql.get_warn_time(chat.id)
-        if not soft_warn:
-            if not warn_mode:
-                text = "You need to specify an action to take upon too many warns." \
-                       "Current modes are: ban/kick/mute/tmute/tban"
-            
-            elif warn_mode == 1:
-                text = "You need to specify an action to take upon too many warns.\n" \
-                       "Current mode: `ban`"
-            
-            elif warn_mode == 2:
-                text = "You need to specify an action to take upon too many warns.\n" \
-                       "Current mode: `kick`"
-           
-            elif warn_mode == 3:
-                text = "You need to specify an action to take upon too many warns.\n" \
-                       "Current mode: `mute`"
-                       
-            elif warn_mode == 4:
-                text = "You need to specify an action to take upon too many warns.\n" \
-                       "Current mode: `tmute for {}`".format(warn_time)
-            
-            elif warn_mode == 5:
-                text = "You need to specify an action to take upon too many warns.\n" \
-                       "Current mode: `tban for {}`".format(warn_time)
-            msg.reply_text(text, parse_mode=ParseMode.MARKDOWN)
-        
-        else:
-            msg.reply_text("You need to specify an action to take upon too many warns. "
-                           "Current modes are: ban/kick/mute/tmute/tban", parse_mode=ParseMode.MARKDOWN)
-    return ""
-
 
 def __stats__():
     return (
@@ -796,8 +725,6 @@ be a sentence, encompass it with quotes, as such: `/addwarn "very angry" This is
  × /nowarn <keyword>: Stops a warning filter
  × /warnlimit <num>: Sets the warning limit
  × /strongwarn <on/yes/off/no>: If set to on, exceeding the warn limit will result in a ban. Else, will just kick.
- × /setwarnlimit <num of warn>: sets the number of warns before an action is taken upon the user.
- × /setwarnmode ban/kick/mute/tmute/tban: set the action to perform when warnings have been exceeded.
 """
 
 __mod_name__ = "Warnings"
@@ -829,8 +756,6 @@ WARN_LIMIT_HANDLER = CommandHandler(
 WARN_STRENGTH_HANDLER = CommandHandler(
     "strongwarn", set_warn_strength, pass_args=True, filters=Filters.group
 )
-WARN_MODE_HANDLER = CustomCommandHandler(CMD_PREFIX, ["warnmode", "setwarnmode"], set_warn_mode, filters=Filters.group)
-
 
 dispatcher.add_handler(WARN_HANDLER)
 dispatcher.add_handler(CALLBACK_QUERY_HANDLER)
@@ -842,5 +767,4 @@ dispatcher.add_handler(RM_WARN_HANDLER)
 dispatcher.add_handler(LIST_WARN_HANDLER)
 dispatcher.add_handler(WARN_LIMIT_HANDLER)
 dispatcher.add_handler(WARN_STRENGTH_HANDLER)
-dispatcher.add_handler(WARN_MODE_HANDLER)
 dispatcher.add_handler(WARN_FILTER_HANDLER, WARN_HANDLER_GROUP)
