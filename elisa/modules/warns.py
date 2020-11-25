@@ -40,6 +40,7 @@ from elisa.modules.helper_funcs.extraction import (
     extract_user_and_text,
 )
 from elisa.modules.helper_funcs.filters import CustomFilters
+from elisa.modules.helper_funcs.admin_rights import user_can_ban
 from elisa.modules.helper_funcs.misc import split_message
 from elisa.modules.helper_funcs.string_handling import split_quotes, extract_time
 from elisa.modules.log_channel import loggable
@@ -131,6 +132,13 @@ def warn(
 @loggable
 def button(update, context):
     query = update.callback_query  # type: Optional[CallbackQuery]
+    chat = update.effective_chat
+    user = query.from_user
+    
+    if user_can_ban(chat, user, context.bot.id) is False:
+        query.answer("You dont have enough rights.")
+        return ""
+    
     user = update.effective_user  # type: Optional[User]
     match = re.match(r"rm_warn\((.+?)\)", query.data)
     if match:
